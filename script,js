@@ -1,0 +1,1200 @@
+// Initialize default API key if not already set
+const DEFAULT_API_KEY = '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';
+
+// Set default API settings if none exist
+if (!localStorage.getItem('medstudyApiSettings')) {
+    localStorage.setItem('medstudyApiSettings', JSON.stringify({
+        apiKey: DEFAULT_API_KEY,
+        apiModel: 'gpt-3.5-turbo',
+        savedAt: new Date().toISOString()
+    }));
+}
+
+// User Management
+let currentUser = null;
+let users = JSON.parse(localStorage.getItem('medstudy_users')) || {};
+
+// Ensure some default demo accounts exist (merge without overwriting existing users)
+const defaultUsers = {
+    'demo': {
+        password: 'demo123',
+        progress: { anatomy: 85, physiology: 60, pathology: 50, pharmacology: 70 },
+        completedResources: [],
+        department: 'MBBS'
+    },
+    'student': {
+        password: 'student123',
+        progress: { anatomy: 65, physiology: 72, pathology: 58, pharmacology: 81 },
+        completedResources: [],
+        department: 'MBBS'
+    },
+    'medstudent': {
+        password: 'medstudent123',
+        progress: { anatomy: 95, physiology: 88, pathology: 76, pharmacology: 89 },
+        completedResources: [],
+        department: 'MBBS'
+    }
+};
+
+for (const [k, v] of Object.entries(defaultUsers)) {
+    if (!users[k]) users[k] = v;
+}
+
+// Persist merged users back to localStorage so future loads use these defaults
+localStorage.setItem('medstudy_users', JSON.stringify(users));
+
+// AI Knowledge Base
+const aiKnowledgeBase = {
+    // BASIC MEDICAL Q&A
+    "normal blood pressure": "The normal blood pressure of an adult is 120/80 mmHg. Systolic pressure (top number) of less than 120 and diastolic pressure (bottom number) of less than 80 is considered normal. Elevated BP is 120-129/<80, Stage 1 hypertension is 130-139/80-89, and Stage 2 hypertension is ≥140/≥90 mmHg.",
+    
+    "normal heart rate": "The normal heart rate for adults is 60–100 beats per minute (bpm) at rest. Athletes may have lower resting heart rates (40-60 bpm) due to better cardiovascular fitness. Heart rate increases with fever, stress, exercise, and certain medications. Tachycardia is defined as >100 bpm at rest, and bradycardia is <60 bpm.",
+    
+    "homeostasis": "Homeostasis is the process by which the body maintains a stable internal environment despite external changes. It involves the regulation of temperature, pH, oxygen/carbon dioxide levels, glucose concentration, and fluid balance. Homeostatic mechanisms work through negative feedback loops where deviation from normal triggers responses to restore equilibrium.",
+    
+    "hemoglobin": "Hemoglobin is a protein in red blood cells that carries oxygen from the lungs to the body and returns carbon dioxide to the lungs for exhalation. Each hemoglobin molecule consists of 4 globin chains (2 alpha, 2 beta) and 4 heme groups, each containing iron. Normal hemoglobin levels are 13.5-17.5 g/dL in males and 12.0-15.5 g/dL in females.",
+    
+    "immunity": "Immunity is the body's ability to fight infections and diseases. It involves two main components: innate immunity (non-specific, includes physical barriers, complement system, phagocytes) and adaptive immunity (specific, includes antibodies and T cells). Active immunity develops from vaccination or natural infection, while passive immunity is obtained from antibodies (maternal or therapeutic).",
+    
+    // CLINICAL Q&A
+    "first-line treatment for fever": "The first-line treatment for fever is paracetamol (acetaminophen) and adequate hydration. Paracetamol acts as an antipyretic by resetting the hypothalamic thermostat. Typical dose is 500-1000 mg every 4-6 hours (max 4000 mg/day). NSAIDs like ibuprofen are alternatives. Supportive measures include rest, light clothing, and increasing fluid intake to prevent dehydration.",
+    
+    "hypertension definition": "Hypertension is a condition where blood pressure is consistently above 140/90 mmHg or sustained above 130/80 mmHg (per newer guidelines). Primary (essential) hypertension accounts for 90-95% of cases with no identifiable cause. Secondary hypertension (5-10%) results from underlying conditions like kidney disease, pheochromocytoma, or coarctation of aorta.",
+    
+    "diabetes symptoms": "The symptoms of diabetes include increased thirst (polydipsia), frequent urination (polyuria), unexplained weight loss, fatigue, blurred vision, frequent infections, and slow wound healing. Additional symptoms may include numbness/tingling in hands or feet (neuropathy) and fruity-smelling breath (in diabetic ketoacidosis). Early detection and management prevent complications.",
+    
+    "anemia definition": "Anemia is a condition where the hemoglobin level is low, leading to reduced oxygen-carrying capacity of the blood. This results in fatigue, weakness, shortness of breath, and dizziness. Causes include blood loss, decreased RBC production (iron deficiency, B12 deficiency, aplastic anemia), and increased RBC destruction (hemolytic anemia).",
+    
+    "jaundice causes": "Jaundice occurs due to excess bilirubin in the blood causing yellowing of skin and sclera. Main causes include: 1) Prehepatic (hemolysis), 2) Hepatic (liver damage from hepatitis, cirrhosis, alcoholism), 3) Posthepatic (bile duct obstruction from gallstones, pancreatic cancer). Investigation includes LFTs, ultrasound, and sometimes MRI.",
+    
+    // ANATOMY
+    "largest organ human body": "The largest organ in the human body is the skin. It covers approximately 1.5-2 square meters and weighs about 3.5-4.5 kg (15-16% of body weight). Functions include protection from infection and dehydration, temperature regulation, sensation, and vitamin D synthesis. If considering internal organs, the liver is the largest.",
+    
+    // PHYSIOLOGY
+    "kidney function": "The function of the kidney includes: 1) Filtration of blood to remove waste products and excess water, 2) Reabsorption of useful substances (glucose, amino acids, electrolytes), 3) Secretion of additional waste into filtrate, 4) Maintaining fluid and electrolyte balance, 5) Regulating blood pressure through renin-angiotensin system, 6) Red blood cell production (erythropoietin), 7) Vitamin D activation.",
+    
+    // BIOCHEMISTRY
+    "ATP adenosine triphosphate": "ATP (Adenosine Triphosphate) is the energy currency of the cell. It consists of adenosine (nucleoside) and three phosphate groups. Energy is released when the terminal high-energy phosphate bond is cleaved, releasing ~7.3 kcal/mol under cellular conditions. This energy drives cellular processes like muscle contraction, active transport, and biosynthesis. ATP is regenerated through glycolysis, citric acid cycle, and oxidative phosphorylation.",
+    
+    // PATHOLOGY
+    "inflammation": "Inflammation is the body's response to injury or infection, characterized by the classic signs: redness (rubor), heat (calor), swelling (tumor), and pain (dolor). Additional signs include loss of function. Acute inflammation is mediated by chemical mediators (histamine, prostaglandins, leukotrienes) and involves vasodilation, increased vascular permeability, and leukocyte infiltration. Chronic inflammation persists for weeks to months.",
+    
+    // PHARMACOLOGY
+    "antibiotic definition": "An antibiotic is a drug used to kill or inhibit the growth of bacteria (bactericidal or bacteriostatic respectively). Classes include: 1) Beta-lactams (penicillins, cephalosporins), 2) Aminoglycosides, 3) Tetracyclines, 4) Macrolides, 5) Fluoroquinolones, 6) Glycopeptides. Antibiotics work by disrupting cell wall synthesis, protein synthesis, DNA replication, or metabolism.",
+    
+    // ORIGINAL CONTENT
+    "renin-angiotensin system": "The renin-angiotensin system (RAS) is a hormone system that regulates blood pressure and fluid balance. When renal blood flow is reduced, juxtaglomerular cells in the kidneys convert prorenin to renin, which is released into circulation. Renin converts angiotensinogen (produced by the liver) to angiotensin I. Angiotensin I is then converted to angiotensin II by angiotensin-converting enzyme (ACE) in the lungs. Angiotensin II causes vasoconstriction and stimulates aldosterone release from adrenal cortex, leading to sodium and water retention.",
+    
+    "external carotid artery branches": "The external carotid artery has 8 major branches: 1) Superior thyroid artery, 2) Ascending pharyngeal artery, 3) Lingual artery, 4) Facial artery, 5) Occipital artery, 6) Posterior auricular artery, 7) Maxillary artery, 8) Superficial temporal artery. Mnemonic: Some Anatomists Like Freaking Out Poor Medical Students.",
+    
+    "type 1 vs type 2 diabetes": "Type 1 diabetes is an autoimmune condition where the body attacks insulin-producing beta cells in the pancreas, leading to absolute insulin deficiency. It typically presents in childhood/young adulthood. Type 2 diabetes involves insulin resistance and relative insulin deficiency, often associated with obesity and older age. Treatment differs: Type 1 requires insulin, while Type 2 may be managed with oral medications, lifestyle changes, and sometimes insulin.",
+    
+    "cranial nerves": "There are 12 cranial nerves: I Olfactory (smell), II Optic (vision), III Oculomotor (eye movement, pupil constriction), IV Trochlear (eye movement), V Trigeminal (facial sensation, chewing), VI Abducens (eye movement), VII Facial (facial expression, taste), VIII Vestibulocochlear (hearing, balance), IX Glossopharyngeal (swallowing, taste), X Vagus (parasympathetic, swallowing), XI Accessory (neck movement), XII Hypoglossal (tongue movement). Mnemonic: Oh Oh Oh To Touch And Feel Very Good Velvet AH.",
+    
+    "myocardial infarction": "Myocardial infarction (heart attack) occurs when blood flow to part of the heart muscle is blocked, usually by a blood clot forming on a ruptured atherosclerotic plaque. Symptoms include chest pain/pressure, shortness of breath, nausea, and sweating. Diagnosis involves ECG changes (ST elevation) and elevated cardiac enzymes (troponin). Treatment includes aspirin, nitroglycerin, oxygen, morphine, and reperfusion therapy (thrombolytics or PCI).",
+    
+    "pneumonia": "Pneumonia is an infection that inflames air sacs in one or both lungs, which may fill with fluid. Causes include bacteria (Streptococcus pneumoniae most common), viruses, and fungi. Symptoms include cough with phlegm, fever, chills, and difficulty breathing. Treatment depends on cause and severity, ranging from oral antibiotics to hospitalization with IV antibiotics and oxygen therapy.",
+    
+    "asthma": "Asthma is a chronic inflammatory disorder of the airways characterized by reversible airflow obstruction and bronchospasm. Symptoms include wheezing, coughing, chest tightness, and shortness of breath. Triggers include allergens, exercise, cold air, and respiratory infections. Treatment involves quick-relief medications (bronchodilators like albuterol) and long-term control medications (inhaled corticosteroids)."
+};
+
+// DOM Elements
+const entryAnimation = document.getElementById('entry-animation');
+const loginPage = document.getElementById('login-page');
+const onboardingPage = document.getElementById('onboarding-page');
+const mainWebsite = document.getElementById('main-website');
+const loginForm = document.getElementById('login-form');
+const registerForm = document.getElementById('register-form');
+const toggleFormBtn = document.getElementById('toggle-form');
+const loginTitle = document.getElementById('login-title');
+const welcomeUser = document.getElementById('welcome-user');
+const logoutBtn = document.getElementById('logout-btn');
+const loginNextBtn = document.getElementById('login-next-btn');
+
+// AI Elements
+const aiAssistantBtn = document.getElementById('ai-assistant-btn');
+const aiAssistantPanel = document.getElementById('ai-assistant-panel');
+const closeAi = document.getElementById('close-ai');
+const aiConversation = document.getElementById('ai-conversation');
+const aiInput = document.getElementById('ai-input');
+const aiSend = document.getElementById('ai-send');
+const quickQuestions = document.querySelectorAll('.quick-question');
+
+// Progress Elements
+const overallProgress = document.getElementById('overall-progress');
+const overallProgressBar = document.getElementById('overall-progress-bar');
+const anatomyProgress = document.getElementById('anatomy-progress');
+const anatomyProgressBar = document.getElementById('anatomy-progress-bar');
+const physiologyProgress = document.getElementById('physiology-progress');
+const physiologyProgressBar = document.getElementById('physiology-progress-bar');
+const pathologyProgress = document.getElementById('pathology-progress');
+const pathologyProgressBar = document.getElementById('pathology-progress-bar');
+const pharmacologyProgress = document.getElementById('pharmacology-progress');
+const pharmacologyProgressBar = document.getElementById('pharmacology-progress-bar');
+
+// Check if user is already logged in
+function checkLoginStatus() {
+    const loggedInUser = localStorage.getItem('medstudy_current_user');
+    if (loggedInUser && users[loggedInUser]) {
+        currentUser = loggedInUser;
+        
+        // Check if user has completed onboarding
+        const userHasDept = users[loggedInUser].department;
+        if (userHasDept) {
+            // User completed onboarding, show main website
+            showMainWebsite();
+        } else {
+            // User needs to complete onboarding
+            showOnboardingPage();
+        }
+        updateProgressDisplay();
+    } else {
+        // Show login page after animation
+        setTimeout(() => {
+            loginPage.style.display = 'flex';
+        }, 3500);
+    }
+}
+
+// Login -> Onboarding 'Next' button (skip/login flow)
+if (loginNextBtn) {
+    loginNextBtn.addEventListener('click', function() {
+        // Navigate to onboarding page using existing nav helper
+        const onboardingIdx = typeof navOrder !== 'undefined' ? navOrder.indexOf('onboarding-page') : -1;
+        if (typeof goToIndex === 'function' && onboardingIdx !== -1) {
+            goToIndex(onboardingIdx);
+        } else {
+            // Fallback: show onboarding directly
+            loginPage.style.display = 'none';
+            onboardingPage.classList.remove('hidden');
+            mainWebsite.classList.add('hidden');
+            window.scrollTo(0,0);
+        }
+    });
+}
+
+// Show onboarding page
+function showOnboardingPage() {
+    loginPage.style.display = 'none';
+    onboardingPage.classList.remove('hidden');
+}
+
+// Show main website
+function showMainWebsite() {
+    loginPage.style.display = 'none';
+    onboardingPage.classList.add('hidden');
+    mainWebsite.classList.remove('hidden');
+    welcomeUser.textContent = `Welcome, ${currentUser}!`;
+}
+
+// Update progress display
+function updateProgressDisplay() {
+    // If no user is logged in, show attractive demo progress values
+    if (!currentUser || !users[currentUser]) {
+        const demoProgress = {
+            anatomy: 85,
+            physiology: 60,
+            pathology: 50,
+            pharmacology: 70
+        };
+
+        const totalProgress = (demoProgress.anatomy + demoProgress.physiology + demoProgress.pathology + demoProgress.pharmacology) / 4;
+
+        overallProgress.textContent = `${Math.round(totalProgress)}%`;
+        overallProgressBar.style.width = `${totalProgress}%`;
+
+        anatomyProgress.textContent = `${demoProgress.anatomy}%`;
+        anatomyProgressBar.style.width = `${demoProgress.anatomy}%`;
+
+        physiologyProgress.textContent = `${demoProgress.physiology}%`;
+        physiologyProgressBar.style.width = `${demoProgress.physiology}%`;
+
+        pathologyProgress.textContent = `${demoProgress.pathology}%`;
+        pathologyProgressBar.style.width = `${demoProgress.pathology}%`;
+
+        // Also set pharmacology
+        document.getElementById('pharmacology-progress').textContent = `${demoProgress.pharmacology}%`;
+        document.getElementById('pharmacology-progress-bar').style.width = `${demoProgress.pharmacology}%`;
+
+        return;
+    }
+
+    const userData = users[currentUser] || {};
+    const progress = userData.progress || {};
+
+    // Coerce progress values to numbers and default to 0 to avoid NaN/undefined
+    const anat = Number(progress.anatomy) || 0;
+    const phys = Number(progress.physiology) || 0;
+    const path = Number(progress.pathology) || 0;
+    const pharm = Number(progress.pharmacology) || 0;
+
+    // Calculate overall progress
+    const totalProgress = (anat + phys + path + pharm) / 4;
+
+    // Ensure totalProgress is a finite number
+    const totalRounded = Number.isFinite(totalProgress) ? Math.round(totalProgress) : 0;
+
+    // Update progress bars (use numeric values)
+    overallProgress.textContent = `${totalRounded}%`;
+    overallProgressBar.style.width = `${totalRounded}%`;
+
+    anatomyProgress.textContent = `${anat}%`;
+    anatomyProgressBar.style.width = `${anat}%`;
+
+    physiologyProgress.textContent = `${phys}%`;
+    physiologyProgressBar.style.width = `${phys}%`;
+
+    pathologyProgress.textContent = `${path}%`;
+    pathologyProgressBar.style.width = `${path}%`;
+
+    pharmacologyProgress.textContent = `${pharm}%`;
+    pharmacologyProgressBar.style.width = `${pharm}%`;
+    
+    // Update completed resources
+    const completedResources = userData.completedResources || [];
+    document.querySelectorAll('.resource-item').forEach(item => {
+        const resourceId = item.getAttribute('data-resource');
+        if (completedResources.includes(resourceId)) {
+            item.classList.add('completed');
+        } else {
+            item.classList.remove('completed');
+        }
+    });
+}
+
+// Update user progress
+function updateProgress(subject, increment = 5) {
+    if (!currentUser || !users[currentUser]) return;
+    
+    if (!users[currentUser].progress) {
+        users[currentUser].progress = {
+            anatomy: 0,
+            physiology: 0,
+            pathology: 0,
+            pharmacology: 0
+        };
+    }
+    
+    // Increase progress for the subject, but not beyond 100%
+    users[currentUser].progress[subject] = Math.min(
+        100, 
+        users[currentUser].progress[subject] + increment
+    );
+    
+    // Save to localStorage
+    localStorage.setItem('medstudy_users', JSON.stringify(users));
+    
+    // Update display
+    updateProgressDisplay();
+}
+
+// Mark resource as completed
+function markResourceCompleted(resourceId) {
+    if (!currentUser || !users[currentUser]) return;
+    
+    if (!users[currentUser].completedResources) {
+        users[currentUser].completedResources = [];
+    }
+    
+    if (!users[currentUser].completedResources.includes(resourceId)) {
+        users[currentUser].completedResources.push(resourceId);
+        localStorage.setItem('medstudy_users', JSON.stringify(users));
+        updateProgressDisplay();
+    }
+}
+
+// AI Assistant Functions
+function toggleAIPanel() {
+    aiAssistantPanel.classList.toggle('active');
+    aiAssistantBtn.classList.toggle('pulse');
+}
+
+function addMessage(message, isUser = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-message ${isUser ? 'user' : 'bot'}`;
+    messageDiv.textContent = message;
+    aiConversation.appendChild(messageDiv);
+    aiConversation.scrollTop = aiConversation.scrollHeight;
+    
+    // Speak bot messages if voice is enabled
+    if (!isUser && voiceOutputEnabled) {
+        speakText(message);
+    }
+}
+
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'ai-typing';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    typingDiv.id = 'typing-indicator';
+    aiConversation.appendChild(typingDiv);
+    aiConversation.scrollTop = aiConversation.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+function processAIQuestion(question) {
+    // Add user message
+    addMessage(question, true);
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Clear input
+    aiInput.value = '';
+    
+    // Simulate AI processing delay
+    setTimeout(() => {
+        hideTypingIndicator();
+        
+        // Find the best matching response
+        let bestMatch = null;
+        let bestMatchScore = 0;
+        
+        for (const [key, value] of Object.entries(aiKnowledgeBase)) {
+            const score = calculateMatchScore(question.toLowerCase(), key.toLowerCase());
+            if (score > bestMatchScore) {
+                bestMatchScore = score;
+                bestMatch = value;
+            }
+        }
+        
+        // If we have a good match, use it
+        if (bestMatchScore > 0.2) {
+            addMessage(bestMatch);
+        } else {
+            // Try to use OpenAI API for unknown topics
+            queryOpenAIForMedicalQuestion(question);
+        }
+    }, 1500);
+}
+
+function queryOpenAIForMedicalQuestion(question) {
+    const apiSettings = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+    const apiKey = apiSettings.apiKey;
+    
+    if (!apiKey) {
+        addMessage("I don't have that in my knowledge base, but I can help if you configure an OpenAI API key. Go to your profile settings and add an API key to enable AI responses for broader topics.");
+        return;
+    }
+    
+    // Call OpenAI API
+    fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: apiSettings.apiModel || 'gpt-3.5-turbo',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a medical education assistant for medical students. Provide accurate, concise medical information to help students understand concepts. Keep responses under 200 words.'
+                },
+                {
+                    role: 'user',
+                    content: question
+                }
+            ],
+            max_tokens: 300
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.choices && data.choices.length > 0) {
+            const answer = data.choices[0].message.content;
+            addMessage(answer);
+        } else if (data.error) {
+            addMessage(`API Error: ${data.error.message}. Please check your API key in settings.`);
+        } else {
+            addMessage("I couldn't generate a response. Try asking another question or check your API settings.");
+        }
+    })
+    .catch(error => {
+        addMessage(`Sorry, I encountered an error: ${error.message}. This might be a network issue or invalid API key.`);
+    });
+}
+
+function calculateMatchScore(question, keyword) {
+    // Split question into words
+    const questionWords = question.split(/\s+/);
+    const keywordWords = keyword.split(/\s+/);
+    let score = 0;
+    
+    // Award points for each matching word
+    for (const qWord of questionWords) {
+        for (const kWord of keywordWords) {
+            if (kWord.includes(qWord) && qWord.length > 2) {
+                score += 1;
+            } else if (qWord.includes(kWord) && kWord.length > 2) {
+                score += 0.5;
+            }
+        }
+    }
+    
+    return score / questionWords.length;
+}
+
+// Voice Assistance Variables
+let isListening = false;
+let voiceOutputEnabled = true;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const speechSynthesis = window.speechSynthesis;
+
+// Initialize Speech Recognition
+let recognition = null;
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+}
+
+// Voice Input Function
+function startVoiceInput() {
+    if (!recognition) {
+        alert('Voice recognition not supported in your browser. Please use Chrome, Edge, or Safari.');
+        return;
+    }
+    
+    if (isListening) {
+        recognition.abort();
+        isListening = false;
+        document.getElementById('voice-status').style.display = 'none';
+        document.getElementById('ai-voice-input').style.color = '#3498db';
+        return;
+    }
+    
+    isListening = true;
+    document.getElementById('voice-status').style.display = 'inline';
+    document.getElementById('ai-voice-input').style.color = '#e74c3c';
+    aiInput.value = '';
+    
+    recognition.onstart = function() {
+        document.getElementById('voice-status').textContent = '🎤 Listening...';
+    };
+    
+    recognition.onresult = function(event) {
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            
+            if (event.results[i].isFinal) {
+                aiInput.value = transcript;
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+        
+        if (interimTranscript) {
+            document.getElementById('voice-status').textContent = '🎤 ' + interimTranscript;
+        }
+    };
+    
+    recognition.onerror = function(event) {
+        document.getElementById('voice-status').textContent = '❌ Error: ' + event.error;
+        console.log('Speech recognition error:', event.error);
+    };
+    
+    recognition.onend = function() {
+        isListening = false;
+        document.getElementById('voice-status').style.display = 'none';
+        document.getElementById('ai-voice-input').style.color = '#3498db';
+    };
+    
+    recognition.start();
+}
+
+// Voice Output Function (Text-to-Speech)
+function speakText(text) {
+    if (!voiceOutputEnabled || !speechSynthesis) return;
+    
+    // Cancel any ongoing speech
+    speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 0.8;
+    utterance.lang = 'en-US';
+    
+    speechSynthesis.speak(utterance);
+}
+
+// Toggle Voice Output
+function toggleVoiceOutput() {
+    voiceOutputEnabled = !voiceOutputEnabled;
+    const btn = document.getElementById('ai-voice-output');
+    if (voiceOutputEnabled) {
+        btn.textContent = '🔊 Voice ON';
+        btn.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+    } else {
+        btn.textContent = '🔇 Voice OFF';
+        btn.style.background = 'linear-gradient(135deg, #95a5a6, #7f8c8d)';
+        speechSynthesis.cancel();
+    }
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Check login status after page loads
+    setTimeout(checkLoginStatus, 3500);
+    
+    // Toggle between login and register forms
+    toggleFormBtn.addEventListener('click', function() {
+        if (loginForm.classList.contains('hidden')) {
+            // Switch to login form
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            loginTitle.textContent = 'Login to MedStudy';
+            toggleFormBtn.textContent = "Don't have an account? Sign up";
+        } else {
+            // Switch to register form
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            loginTitle.textContent = 'Create an Account';
+            toggleFormBtn.textContent = 'Already have an account? Login';
+        }
+    });
+    
+    // Password Toggle Functionality
+    function setupPasswordToggle(toggleBtnId, inputId) {
+        const toggleBtn = document.getElementById(toggleBtnId);
+        const input = document.getElementById(inputId);
+        
+        if (toggleBtn && input) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const type = input.type === 'password' ? 'text' : 'password';
+                input.type = type;
+                
+                // Change icon based on visibility
+                toggleBtn.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+                toggleBtn.title = type === 'password' ? 'Show password' : 'Hide password';
+            });
+        }
+    }
+    
+    // Setup password toggles for all password fields
+    setupPasswordToggle('toggle-password-login', 'password');
+    setupPasswordToggle('toggle-password-new', 'new-password');
+    setupPasswordToggle('toggle-password-confirm', 'confirm-password');
+    
+    // Login form submission
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (users[username] && users[username].password === password) {
+            currentUser = username;
+            localStorage.setItem('medstudy_current_user', username);
+            showOnboardingPage();
+            updateProgressDisplay();
+        } else {
+            alert('Invalid username or password');
+        }
+    });
+    
+    // Auto-submit behavior: submit when user presses Enter in password
+    // or when password input loses focus and both fields are filled.
+    const passwordInput = document.getElementById('password');
+    const usernameInput = document.getElementById('username');
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                    // Use requestSubmit if available to trigger the submit event
+                    if (typeof loginForm.requestSubmit === 'function') {
+                        loginForm.requestSubmit();
+                    } else {
+                        loginForm.submit();
+                    }
+                }
+            }
+        });
+
+        passwordInput.addEventListener('blur', function() {
+            if (usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                // small delay to allow any last-minute typing
+                setTimeout(() => {
+                    if (usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                        if (typeof loginForm.requestSubmit === 'function') {
+                            loginForm.requestSubmit();
+                        } else {
+                            loginForm.submit();
+                        }
+                    }
+                }, 200);
+            }
+        });
+    }
+    
+    // Register form submission
+    registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('new-username').value;
+        const password = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        
+        if (users[username]) {
+            alert('Username already exists');
+            return;
+        }
+        
+        // Create new user
+        users[username] = {
+            password: password,
+            progress: {
+                anatomy: 0,
+                physiology: 0,
+                pathology: 0,
+                pharmacology: 0
+            },
+            completedResources: []
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('medstudy_users', JSON.stringify(users));
+        
+        // Auto login
+        currentUser = username;
+        localStorage.setItem('medstudy_current_user', username);
+        showOnboardingPage();
+        updateProgressDisplay();
+        
+        alert('Account created successfully!');
+    });
+    
+    // Logout button
+    logoutBtn.addEventListener('click', function() {
+        currentUser = null;
+        localStorage.removeItem('medstudy_current_user');
+        loginPage.style.display = 'flex';
+        mainWebsite.classList.add('hidden');
+        
+        // Reset forms
+        loginForm.reset();
+        registerForm.reset();
+        if (registerForm.classList.contains('hidden') === false) {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            loginTitle.textContent = 'Login to MedStudy';
+            toggleFormBtn.textContent = "Don't have an account? Sign up";
+        }
+    });
+    
+    // AI Assistant Events
+    aiAssistantBtn.addEventListener('click', toggleAIPanel);
+    closeAi.addEventListener('click', toggleAIPanel);
+    
+    aiSend.addEventListener('click', function() {
+        if (aiInput.value.trim() !== '') {
+            processAIQuestion(aiInput.value);
+        }
+    });
+    
+    aiInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && aiInput.value.trim() !== '') {
+            processAIQuestion(aiInput.value);
+        }
+    });
+    
+    // Voice input button
+    const voiceInputBtn = document.getElementById('ai-voice-input');
+    if (voiceInputBtn) {
+        voiceInputBtn.addEventListener('click', startVoiceInput);
+    }
+    
+    // Voice output toggle button
+    const voiceOutputBtn = document.getElementById('ai-voice-output');
+    if (voiceOutputBtn) {
+        voiceOutputBtn.addEventListener('click', toggleVoiceOutput);
+    }
+    
+    // Quick question buttons
+    quickQuestions.forEach(button => {
+        button.addEventListener('click', function() {
+            const question = this.getAttribute('data-question');
+            processAIQuestion(question);
+        });
+    });
+    
+    // Resource links - mark as completed and update progress
+    document.querySelectorAll('.resource-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const subject = this.getAttribute('data-subject');
+            updateProgress(subject);
+            alert(`Great! You've studied ${this.textContent}. Your progress has been updated.`);
+        });
+    });
+    
+    // Resource items - mark as completed
+    document.querySelectorAll('.resource-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const resourceId = this.getAttribute('data-resource');
+            markResourceCompleted(resourceId);
+            this.classList.add('completed');
+            alert('Resource marked as completed!');
+        });
+    });
+    
+    // Tab functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons and contents
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked button
+            btn.classList.add('active');
+            
+            // Show corresponding content
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+    
+    // Flashcard functionality
+    const flashcard = document.getElementById('flashcard');
+    const prevBtn = document.getElementById('prev-card');
+    const nextBtn = document.getElementById('next-card');
+    const shuffleBtn = document.getElementById('shuffle-cards');
+    
+    // Sample flashcard data
+    const flashcards = [
+        { question: "What is the most common cause of hypercalcemia in hospitalized patients?", answer: "Malignancy" },
+        { question: "Which artery supplies blood to the majority of the small intestine?", answer: "Superior mesenteric artery" },
+        { question: "What is the most common type of kidney stone?", answer: "Calcium oxalate" },
+        { question: "Which cranial nerve is responsible for facial sensation?", answer: "Trigeminal nerve (CN V)" },
+        { question: "What is the normal range for blood pH?", answer: "7.35 - 7.45" }
+    ];
+    
+    let currentCardIndex = 0;
+    
+    // Flip card on click
+    flashcard.addEventListener('click', function() {
+        this.classList.toggle('flipped');
+    });
+    
+    // Update flashcard content
+    function updateFlashcard() {
+        document.getElementById('flashcard-question').textContent = flashcards[currentCardIndex].question;
+        document.getElementById('flashcard-answer').textContent = flashcards[currentCardIndex].answer;
+        flashcard.classList.remove('flipped');
+    }
+    
+    // Next card
+    nextBtn.addEventListener('click', function() {
+        currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+        updateFlashcard();
+    });
+    
+    // Previous card
+    prevBtn.addEventListener('click', function() {
+        currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+        updateFlashcard();
+    });
+    
+    // Shuffle cards
+    shuffleBtn.addEventListener('click', function() {
+        // Simple shuffle algorithm
+        for (let i = flashcards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+        }
+        currentCardIndex = 0;
+        updateFlashcard();
+    });
+    
+    // Initialize first flashcard
+    updateFlashcard();
+
+    // Hamburger Menu Functionality
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    // Toggle sidebar when hamburger is clicked
+    hamburgerBtn.addEventListener('click', function() {
+        hamburgerBtn.classList.toggle('active');
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+    });
+
+    // Close sidebar when overlay is clicked
+    sidebarOverlay.addEventListener('click', function() {
+        hamburgerBtn.classList.remove('active');
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+    });
+
+    // Close sidebar when a link is clicked
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            hamburgerBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+    });
+
+    // Close sidebar when pressing Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            hamburgerBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        }
+    });
+
+    // Collapsible Course Structure
+    const courseToggle = document.getElementById('course-toggle');
+    const courseStructure = document.getElementById('course-structure');
+
+    courseToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        courseToggle.classList.toggle('active');
+        
+        if (courseStructure.style.display === 'none') {
+            courseStructure.style.display = 'block';
+            courseToggle.textContent = '▼ MBBS Course Structure';
+        } else {
+            courseStructure.style.display = 'none';
+            courseToggle.textContent = '▶ MBBS Course Structure';
+        }
+    });
+
+    // Collapsible Quiz & Tests
+    const quizToggle = document.getElementById('quiz-toggle');
+    const quizStructure = document.getElementById('quiz-structure');
+
+    quizToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        quizToggle.classList.toggle('active');
+        
+        if (quizStructure.style.display === 'none') {
+            quizStructure.style.display = 'block';
+            quizToggle.textContent = '▼ Quiz & Tests';
+        } else {
+            quizStructure.style.display = 'none';
+            quizToggle.textContent = '▶ Quiz & Tests';
+        }
+    });
+
+    // Profile Dropdown Menu Functionality
+    const profileBtn = document.getElementById('profile-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
+    // Toggle dropdown when profile button is clicked
+    profileBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.classList.remove('active');
+        }
+    });
+
+    // Onboarding Page Functionality
+    const onboardingForm = document.getElementById('onboarding-form');
+    const deptCards = document.querySelectorAll('.dept-card');
+    const userDeptInput = document.getElementById('user-department');
+    const onboardingBackBtn = document.getElementById('onboarding-back');
+    let selectedDept = null;
+
+    // Department card selection
+    deptCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selected class from all cards
+            deptCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            
+            // Update hidden input with selected department
+            selectedDept = this.getAttribute('data-dept');
+            userDeptInput.value = selectedDept;
+        });
+    });
+
+    // Back button - return to login
+    onboardingBackBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        onboardingPage.classList.add('hidden');
+        loginPage.style.display = 'flex';
+        
+        // Reset form
+        onboardingForm.reset();
+        deptCards.forEach(c => c.classList.remove('selected'));
+        userDeptInput.value = '';
+        
+        // Reset login form too
+        loginForm.reset();
+    });
+
+    // Onboarding form submission
+    onboardingForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const uid = document.getElementById('user-uid').value.trim();
+        const dept = userDeptInput.value;
+        
+        // Validation
+        if (!uid) {
+            alert('Please enter your UID');
+            return;
+        }
+        
+        if (!dept) {
+            alert('Please select a department');
+            return;
+        }
+        
+        // Save user profile data
+        if (currentUser && users[currentUser]) {
+            users[currentUser].uid = uid;
+            users[currentUser].department = dept;
+            localStorage.setItem('medstudy_users', JSON.stringify(users));
+            localStorage.setItem('medstudy_user_uid', uid);
+            localStorage.setItem('medstudy_user_department', dept);
+        }
+        
+        // Show main website
+        showMainWebsite();
+        
+        // Optional: Show welcome message
+        alert(`Welcome to MedStudy, ${currentUser}! Your ${dept} specialization profile is ready.`);
+    });
+
+    // Close dropdown when pressing Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            profileDropdown.classList.remove('active');
+        }
+    });
+
+    
+    // Global Next/Previous navigation
+    const navOrder = [ 'login-page', 'onboarding-page', 'progress', 'subjects', 'resources', 'tools', 'flashcards' ];
+    const prevPageBtn = document.getElementById('prev-page-btn');
+    const nextPageBtn = document.getElementById('next-page-btn');
+
+    function getVisibleIndex() {
+        for (let i = 0; i < navOrder.length; i++) {
+            const id = navOrder[i];
+            const el = document.getElementById(id);
+            if (!el) continue;
+            // If page overlays (login/onboarding) are visible by style
+            const style = window.getComputedStyle(el);
+            if (style.display !== 'none' && style.visibility !== 'hidden') {
+                return i;
+            }
+        }
+        // Default to progress section
+        const prog = document.getElementById('progress');
+        return prog ? navOrder.indexOf('progress') : 0;
+    }
+
+    function goToIndex(idx) {
+        if (idx < 0 || idx >= navOrder.length) return;
+        const id = navOrder[idx];
+        // Special handling for overlays
+        if (id === 'login-page') {
+            loginPage.style.display = 'flex';
+            onboardingPage.classList.add('hidden');
+            mainWebsite.classList.add('hidden');
+            window.scrollTo(0,0);
+            return;
+        }
+        if (id === 'onboarding-page') {
+            loginPage.style.display = 'none';
+            onboardingPage.classList.remove('hidden');
+            mainWebsite.classList.add('hidden');
+            window.scrollTo(0,0);
+            return;
+        }
+        // Otherwise show main website and scroll to section
+        loginPage.style.display = 'none';
+        onboardingPage.classList.add('hidden');
+        mainWebsite.classList.remove('hidden');
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    prevPageBtn.addEventListener('click', function() {
+        const idx = getVisibleIndex();
+        goToIndex(Math.max(0, idx - 1));
+    });
+
+    nextPageBtn.addEventListener('click', function() {
+        const idx = getVisibleIndex();
+        goToIndex(Math.min(navOrder.length - 1, idx + 1));
+    });
+
+    // API Settings Modal Functions
+    const apiModal = document.getElementById('api-settings-modal');
+    const apiForm = document.getElementById('api-key-form');
+    const apiKeyInput = document.getElementById('openai-api-key');
+    const apiModelSelect = document.getElementById('api-model');
+    const apiStatusMessage = document.getElementById('api-status-message');
+    const apiCloseBtn = document.querySelector('.api-close-btn');
+
+    // Open API Settings Modal
+    window.openApiModal = function() {
+        const saved = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+        
+        // Restore saved settings
+        if (saved.apiKey) {
+            // Show masked API key for privacy
+            const masked = '••••' + saved.apiKey.slice(-4);
+            apiKeyInput.value = masked;
+            apiKeyInput.dataset.isEditing = false;
+        } else {
+            apiKeyInput.value = '';
+            apiKeyInput.dataset.isEditing = true;
+        }
+        
+        if (saved.apiModel) {
+            apiModelSelect.value = saved.apiModel;
+        }
+        
+        // Clear status message
+        apiStatusMessage.textContent = '';
+        apiStatusMessage.className = 'api-status';
+        
+        // Show modal
+        apiModal.classList.add('active');
+        
+        // Create overlay if not exists
+        if (!document.getElementById('api-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'api-overlay';
+            overlay.className = 'api-modal-overlay';
+            overlay.addEventListener('click', closeApiModal);
+            apiModal.parentNode.insertBefore(overlay, apiModal.nextSibling);
+        }
+        document.getElementById('api-overlay').style.display = 'block';
+        
+        // Focus on input
+        setTimeout(() => apiKeyInput.focus(), 100);
+    };
+
+    // Close API Settings Modal
+    window.closeApiModal = function() {
+        apiModal.classList.remove('active');
+        const overlay = document.getElementById('api-overlay');
+        if (overlay) overlay.style.display = 'none';
+        apiForm.reset();
+    };
+
+    // Close button event listener
+    if (apiCloseBtn) {
+        apiCloseBtn.addEventListener('click', closeApiModal);
+    }
+
+    // API Key input - detect when user wants to edit
+    if (apiKeyInput) {
+        apiKeyInput.addEventListener('focus', function() {
+            if (this.dataset.isEditing === 'false' && this.value.startsWith('••••')) {
+                this.value = '';
+                this.placeholder = 'Enter new API key or leave blank to keep current';
+            }
+        });
+
+        apiKeyInput.addEventListener('blur', function() {
+            if (this.value === '') {
+                const saved = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+                if (saved.apiKey) {
+                    const masked = '••••' + saved.apiKey.slice(-4);
+                    this.value = masked;
+                    this.dataset.isEditing = false;
+                }
+            }
+        });
+    }
+
+    // API Form submission
+    if (apiForm) {
+        apiForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let apiKey = apiKeyInput.value.trim();
+            const apiModel = apiModelSelect.value;
+            
+            // If masked key, use existing one
+            if (apiKey.startsWith('••••')) {
+                const saved = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+                apiKey = saved.apiKey || '';
+            }
+            
+            // Validation
+            if (!apiKey) {
+                showApiStatus('error', '❌ Please enter an API key');
+                return;
+            }
+            
+            if (!apiKey.startsWith('sk-')) {
+                showApiStatus('error', '❌ Invalid API key format. Must start with "sk-"');
+                return;
+            }
+            
+            // Save to localStorage
+            try {
+                const settings = {
+                    apiKey: apiKey,
+                    apiModel: apiModel,
+                    savedAt: new Date().toISOString()
+                };
+                localStorage.setItem('medstudyApiSettings', JSON.stringify(settings));
+                
+                // Show success message
+                showApiStatus('success', '✅ API Key saved successfully! Your custom AI will use this key.');
+                
+                // Close modal after delay
+                setTimeout(() => {
+                    closeApiModal();
+                }, 1500);
+            } catch (error) {
+                showApiStatus('error', '❌ Failed to save API key: ' + error.message);
+            }
+        });
+    }
+
+    // Show API Status Message
+    function showApiStatus(type, message) {
+        apiStatusMessage.textContent = message;
+        apiStatusMessage.className = `api-status ${type}`;
+        apiStatusMessage.style.display = 'block';
+    }
+
+    // Add API Settings button to profile dropdown
+    if (profileDropdown) {
+        // Check if settings button already exists
+        if (!document.getElementById('api-settings-btn')) {
+            const settingsItem = document.createElement('li');
+            settingsItem.innerHTML = '<button id="api-settings-btn" onclick="openApiModal()" style="width: 100%; text-align: left; padding: 0.8rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; color: #333;">⚙️ API Key Settings</button>';
+            profileDropdown.appendChild(settingsItem);
+        }
+    }
+});

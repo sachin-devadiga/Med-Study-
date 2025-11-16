@@ -1,0 +1,4420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedStudy - Medical Student Resources</title>
+    <style>
+        /* Global Styles */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --ai-color: #9b59b6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Entry Animation */
+        #entry-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 1s ease-in-out 3s forwards;
+        }
+        
+        .logo-animation {
+            text-align: center;
+            color: white;
+        }
+        
+        .logo-animation h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .logo-animation p {
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1.5s forwards;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+        
+        /* Login Page */
+        #login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('file:///C:/Users/sachi/OneDrive/Desktop/AAAAAA/HACKATHON%204/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.5s ease;
+        }
+
+        #login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(44, 62, 80, 0.4);
+            z-index: 1;
+        }
+        
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .login-container h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .login-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .login-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .toggle-form {
+            color: var(--secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+
+        /* Password Toggle Styles */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper input {
+            width: 100%;
+            padding-right: 2.5rem;
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 0.8rem;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.3rem 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password-btn:hover {
+            color: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .toggle-password-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Onboarding Page Styles */
+        #onboarding-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 998;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+        }
+
+        #onboarding-page.hidden {
+            display: none !important;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #onboarding-page:not(.hidden) {
+            display: flex;
+        }
+
+        #onboarding-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="80" cy="30" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="30" cy="70" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="90" cy="80" r="2" fill="rgba(255,255,255,0.3)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .onboarding-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .onboarding-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .onboarding-logo {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .onboarding-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .onboarding-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        #onboarding-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .label-icon {
+            font-size: 1.2rem;
+        }
+
+        .form-input {
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+            color: var(--primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: #f8fbff;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: #999;
+            margin: 0;
+        }
+
+        .department-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .dept-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            min-height: 120px;
+        }
+
+        .dept-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.15);
+        }
+
+        .dept-card.selected {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(155, 89, 182, 0.1) 100%);
+            border-color: var(--secondary);
+            border-width: 2px;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.25), inset 0 0 0 1px rgba(52, 152, 219, 0.2);
+        }
+
+        .dept-icon {
+            font-size: 2.2rem;
+        }
+
+        .dept-name {
+            font-weight: 600;
+            color: var(--primary);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .onboarding-submit-btn {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--secondary) 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .onboarding-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .onboarding-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .onboarding-submit-btn:disabled {
+            background: linear-gradient(135deg, #bbb 0%, #999 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .onboarding-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f0f0f0;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        /* Navigation Buttons */
+        .navigation-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: space-between;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 0.9rem;
+            border: 2px solid var(--secondary);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            color: var(--secondary);
+        }
+
+        .nav-btn:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        .nav-btn.nav-back {
+            border-color: #ddd;
+            color: #666;
+        }
+
+        .nav-btn.nav-back:hover {
+            background: #f5f5f5;
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .nav-btn.nav-next {
+            background: linear-gradient(135deg, var(--secondary) 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-btn.nav-next:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            #onboarding-page {
+                padding: 1rem;
+            }
+
+            .onboarding-container {
+                padding: 1.5rem;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                border-radius: 15px;
+            }
+
+            .onboarding-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .onboarding-logo {
+                font-size: 2.5rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .onboarding-header h2 {
+                font-size: 1.3rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .onboarding-header p {
+                font-size: 0.85rem;
+            }
+
+            #onboarding-form {
+                gap: 1.2rem;
+            }
+
+            .form-section {
+                gap: 0.6rem;
+            }
+
+            .form-label {
+                font-size: 0.9rem;
+                gap: 0.3rem;
+            }
+
+            .label-icon {
+                font-size: 1rem;
+            }
+
+            .form-input {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+                border-radius: 8px;
+            }
+
+            .form-hint {
+                font-size: 0.75rem;
+                line-height: 1.3;
+            }
+
+            .department-grid {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .dept-card {
+                min-height: 90px;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .dept-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(52, 152, 219, 0.12);
+            }
+
+            .dept-icon {
+                font-size: 1.8rem;
+            }
+
+            .dept-name {
+                font-size: 0.85rem;
+            }
+
+            .navigation-buttons {
+                gap: 0.8rem;
+                margin-top: 1rem;
+            }
+
+            .nav-btn {
+                padding: 0.7rem;
+                border-radius: 8px;
+                font-size: 0.85rem;
+            }
+
+            .onboarding-submit-btn {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+            }
+
+            .onboarding-footer {
+                margin-top: 1rem;
+                padding-top: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #onboarding-page {
+                padding: 0.5rem;
+            }
+
+            .onboarding-container {
+                padding: 1rem;
+                border-radius: 12px;
+            }
+
+            .onboarding-logo {
+                font-size: 2rem;
+                margin-bottom: 0.6rem;
+            }
+
+            .onboarding-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .onboarding-header p {
+                font-size: 0.8rem;
+            }
+
+            #onboarding-form {
+                gap: 1rem;
+            }
+
+            .form-label {
+                font-size: 0.85rem;
+            }
+
+            .form-input {
+                padding: 0.6rem 0.9rem;
+                font-size: 0.85rem;
+            }
+
+            .form-hint {
+                font-size: 0.7rem;
+            }
+
+            .dept-card {
+                min-height: 80px;
+                padding: 0.8rem;
+            }
+
+            .dept-icon {
+                font-size: 1.5rem;
+            }
+
+            .dept-name {
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            .onboarding-submit-btn {
+                padding: 0.7rem;
+                font-size: 0.85rem;
+            }
+
+            .onboarding-footer {
+                font-size: 0.75rem;
+                margin-top: 0.8rem;
+                padding-top: 0.8rem;
+            }
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            min-width: fit-content;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-left: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+        
+        nav {
+            flex: 0 0 auto;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: var(--secondary);
+        }
+
+        .search-bar {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            margin: 0;
+        }
+        
+        .search-bar input {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            background-color: #f9f9f9;
+            box-shadow: inset 0 0 8px rgba(52, 152, 219, 0.2);
+            transform: scale(1.02);
+        }
+        
+        .search-bar button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #2980b9;
+            transform: translateX(2px);
+        }
+
+        /* Profile Menu Styles */
+        .profile-menu {
+            position: relative;
+            min-width: fit-content;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .profile-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .profile-icon {
+            font-size: 1.3rem;
+        }
+
+        .user-name {
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            min-width: 180px;
+            margin-top: 0.8rem;
+            display: none;
+            z-index: 1001;
+            overflow: hidden;
+            animation: slideDownIn 0.3s ease-out;
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        @keyframes slideDownIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background: none;
+            border: none;
+            color: #333;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+            padding-left: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+
+        .logout-item {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .logout-item:hover {
+            background-color: #ffe6e6;
+            color: #c0392b;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-btn {
+            display: flex;
+            flex-direction: column;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            gap: 5px;
+            margin-right: 1rem;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .hamburger-btn span {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background-color: var(--primary);
+            color: white;
+            padding-top: 80px;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-content {
+            padding: 2rem 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            padding: 0 2rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 0.8rem 2rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left-color: var(--secondary);
+            padding-left: 2.3rem;
+        }
+
+        /* Download Notes Button Styling */
+        .download-notes-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-notes-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.5) !important;
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%) !important;
+        }
+
+        .download-notes-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .download-notes-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s ease;
+        }
+
+        .download-notes-btn:hover::before {
+            left: 100%;
+        }
+
+        .sidebar-divider {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 1.5rem 0;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Course Structure Styles */
+        .course-structure {
+            padding: 0;
+        }
+
+        .year-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .year-section h4 {
+            padding: 0 2rem 0.5rem;
+            color: var(--secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .notes-section h4 {
+            padding: 0 2rem 1rem;
+            color: white;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .notes-section p {
+            padding: 0 2rem;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+
+        /* Collapsible Course Structure */
+        .course-toggle {
+            display: block;
+            width: calc(100% - 4rem);
+            margin: 0 2rem 0.5rem;
+            padding: 0.8rem 1rem;
+            background-color: rgba(52, 152, 219, 0.1);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .course-toggle:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .course-toggle.active {
+            background-color: rgba(52, 152, 219, 0.3);
+        }
+
+        .course-toggle.active::before {
+            content: '▼ ';
+        }
+
+        /* Overlay for sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 98;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex;
+            }
+
+            nav ul {
+                display: none;
+            }
+
+            .search-bar {
+                display: none;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .profile-btn {
+                padding: 0.6rem;
+                gap: 0;
+            }
+
+            .profile-icon {
+                font-size: 1.5rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+                gap: 1rem;
+            }
+
+            header {
+                padding: 0.8rem 0;
+            }
+        }
+        
+        /* AI Assistant Button */
+        .ai-assistant-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: var(--ai-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-assistant-btn:hover {
+            transform: scale(1.15);
+            background-color: #8e44ad;
+            box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4);
+        }
+        
+        .ai-assistant-btn.pulse {
+            animation: aiPulse 2s infinite;
+        }
+        
+        @keyframes aiPulse {
+            0% { box-shadow: 0 0 0 0 rgba(155, 89, 182, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(155, 89, 182, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(155, 89, 182, 0); }
+        }
+        
+        /* AI Assistant Panel */
+        .ai-assistant-panel {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 400px;
+            height: 500px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.3s, opacity 0.3s, visibility 0.3s;
+        }
+        
+        .ai-assistant-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .ai-header {
+            background-color: var(--ai-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .close-ai {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .ai-conversation {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .ai-message {
+            max-width: 80%;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+        
+        .ai-message.user {
+            align-self: flex-end;
+            background-color: var(--secondary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-message.bot {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .ai-typing {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            display: flex;
+            gap: 0.3rem;
+        }
+        
+        .ai-typing span {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            background-color: #999;
+            display: inline-block;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+        
+        .ai-typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .ai-typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .ai-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .ai-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            outline: none;
+        }
+        
+        .ai-input button {
+            background-color: var(--ai-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .quick-questions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            padding: 0 1rem 1rem;
+        }
+        
+        .quick-question {
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 16px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .quick-question:hover {
+            background-color: #e1e1e1;
+        }
+
+        /* API Settings Modal */
+        .api-settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .api-settings-modal.active {
+            display: flex;
+        }
+
+        .api-settings-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.4s ease-out;
+            position: relative;
+        }
+
+        .api-settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .api-settings-header h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .api-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+            padding: 0;
+        }
+
+        .api-close-btn:hover {
+            color: var(--primary);
+        }
+
+        .api-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .api-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .api-form-group label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .api-form-group input {
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .api-form-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: #f8fbff;
+        }
+
+        .api-form-group input::placeholder {
+            color: #ccc;
+        }
+
+        .api-hint {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.3rem;
+            line-height: 1.4;
+        }
+
+        .api-hint a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .api-hint a:hover {
+            text-decoration: underline;
+        }
+
+        .api-form-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .api-form-buttons button {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .api-save-btn {
+            background: linear-gradient(135deg, var(--secondary), #2980b9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .api-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .api-cancel-btn {
+            background: #f0f0f0;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .api-cancel-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .api-status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+            font-weight: 600;
+        }
+
+        .api-status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .api-status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* API Modal Overlay */
+        .api-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 1999;
+            display: none;
+        }
+
+        .api-settings-modal.active ~ .api-modal-overlay,
+        .api-settings-modal.active + .api-modal-overlay {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .api-settings-content {
+                max-width: 90%;
+                width: 100%;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .api-settings-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .api-form-group {
+                gap: 0.4rem;
+            }
+
+            .api-form-group label {
+                font-size: 0.9rem;
+            }
+
+            .api-form-group input,
+            .api-form-group select {
+                font-size: 0.9rem;
+                padding: 0.7rem;
+            }
+
+            .api-form-buttons {
+                gap: 0.8rem;
+            }
+
+            .api-form-buttons button {
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a2530 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 350px;
+            height: 350px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 400px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        /* DNA Animation */
+        .dna-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        .dna-strand {
+            position: absolute;
+            width: 150px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: dnaMoveLeftRight 6s ease-in-out infinite;
+        }
+
+        .dna-helix {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dna-base {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            animation: dnaRotate 3s linear infinite;
+        }
+
+        @keyframes dnaMoveLeftRight {
+            0% {
+                transform: translateX(-60px);
+            }
+            50% {
+                transform: translateX(60px);
+            }
+            100% {
+                transform: translateX(-60px);
+            }
+        }
+
+        @keyframes dnaMoveRightLeft {
+            0% {
+                transform: translateX(60px);
+            }
+            50% {
+                transform: translateX(-60px);
+            }
+            100% {
+                transform: translateX(60px);
+            }
+        }
+
+        @keyframes dnaRotate {
+            0% {
+                transform: rotateZ(0deg);
+            }
+            100% {
+                transform: rotateZ(360deg);
+            }
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: slideInDown 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            animation: slideInUp 0.8s ease-out 0.2s backwards;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            animation: slideInUp 0.8s ease-out 0.4s backwards;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(52,152,219,0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(52,152,219,0.6);
+            }
+        }
+        
+        /* Animated Quote Section */
+        .quote-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 50%, #f8f9fa 100%);
+            padding: 1.2rem 0;
+            margin: 1.2rem 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quote-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+        }
+
+        .quote-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+        }
+        
+        .quote-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 0.8rem 1rem;
+        }
+        
+        .quote-content {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, white 0%, rgba(240,245,250,0.9) 100%);
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
+            border-right: 4px solid #9b59b6;
+            animation: scrollLeftToRight 15s linear infinite;
+            white-space: nowrap;
+        }
+        
+        .quote-text {
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--primary);
+            margin: 0;
+            line-height: 1.6;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            display: inline;
+        }
+
+        .quote-mark {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            opacity: 0.6;
+            margin: 0 0.3rem;
+        }
+        
+        .quote-author {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-left: 1rem;
+            display: inline;
+        }
+
+        .quote-content:hover {
+            animation-play-state: paused;
+            box-shadow: 0 12px 40px rgba(52, 152, 219, 0.3);
+            cursor: pointer;
+        }
+        
+        @keyframes scrollLeftToRight {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 1.5rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            position: relative;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            margin: 0.7rem auto;
+            border-radius: 2px;
+        }
+        
+        /* Subject Cards */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .subject-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,245,250,0.95) 100%);
+            border: 2px solid rgba(52,152,219,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(52, 152, 219, 0.1);
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #2ecc71);
+            z-index: 1;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(52, 152, 219, 0.25);
+            border-color: #3498db;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .card-header h3 {
+            position: relative;
+            z-index: 1;
+            font-size: 1.2rem;
+        }
+        
+        .card-body {
+            padding: 1rem 1rem;
+            min-height: 100px;
+        }
+        
+        .card-body ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-body ul li {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(52,152,219,0.1);
+            opacity: 0;
+            animation: slideInUp 0.6s ease-out forwards;
+            font-size: 0.9rem;
+        }
+
+        .card-body ul li:nth-child(1) { animation-delay: 0.1s; }
+        .card-body ul li:nth-child(2) { animation-delay: 0.2s; }
+        .card-body ul li:nth-child(3) { animation-delay: 0.3s; }
+        .card-body ul li:nth-child(4) { animation-delay: 0.4s; }
+        
+        .card-body ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .card-body a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-body a::before {
+            content: '\u2192';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .card-body a:hover {
+            color: #9b59b6;
+            padding-left: 1.5rem;
+        }
+
+        .card-body a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .card-footer {
+            padding: 0.8rem;
+            background: linear-gradient(135deg, rgba(52,152,219,0.05) 0%, rgba(155,89,182,0.05) 100%);
+            border-top: 1px solid rgba(52,152,219,0.2);
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            background-color: white;
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        
+        .progress-bar {
+            height: 14px;
+            background-color: #e9eef6;
+            border-radius: 12px;
+            margin-bottom: 0.9rem;
+            overflow: hidden;
+            box-shadow: inset 0 -2px 6px rgba(0,0,0,0.06);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(52,152,219,0.95), rgba(46,204,113,0.95));
+            border-radius: 12px;
+            transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(52,152,219,0.12);
+            background-size: 200% 100%;
+            animation: progressMove 3s linear infinite;
+        }
+
+        @keyframes progressMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        .progress-item {
+            margin-bottom: 0.8rem;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Resources Section */
+        .resources {
+            background-color: white;
+            padding: 3rem 0;
+            margin: 3rem 0;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        
+        .resource-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #666;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .tab-btn.active {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .tab-btn.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--secondary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .resource-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+        
+        .resource-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,250,0.9) 100%);
+            border: 2px solid rgba(52,152,219,0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(52,152,219,0.1), rgba(155,89,182,0.1));
+            border-radius: 50%;
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+        
+        .resource-item:hover {
+            transform: translateY(-15px);
+            border-color: #3498db;
+            box-shadow: 0 20px 50px rgba(52, 152, 219, 0.2);
+        }
+
+        .resource-item:hover::before {
+            top: 50%;
+            left: 50%;
+        }
+        
+        .resource-item.completed {
+            border-color: var(--success);
+        }
+        
+        .resource-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            transition: all 0.4s ease;
+        }
+
+        .resource-item:hover .resource-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .resource-item h3 {
+            position: relative;
+            z-index: 1;
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .resource-item p {
+            position: relative;
+            z-index: 1;
+            color: #666;
+            font-size: 0.75rem;
+        }
+        
+        /* Study Tools */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,245,250,0.95) 100%);
+            border: 2px solid rgba(52,152,219,0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-15px);
+            border-color: #3498db;
+            box-shadow: 0 20px 50px rgba(52, 152, 219, 0.25);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: all 0.4s ease;
+        }
+
+        .tool-card:hover .tool-icon {
+            transform: scale(1.3) rotate(15deg);
+        }
+
+        .tool-card h3 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Flashcard Section */
+        .flashcard-section {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a252f 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin: 1.5rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flashcard-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(52,152,219,0.1);
+            border-radius: 50%;
+        }
+
+        .flashcard-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -5%;
+            width: 350px;
+            height: 350px;
+            background: rgba(155,89,182,0.1);
+            border-radius: 50%;
+        }
+        
+        .flashcard-container {
+            max-width: 600px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+        
+        .flashcard {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            margin-bottom: 1.2rem;
+        }
+        
+        .flashcard:hover {
+            filter: drop-shadow(0 15px 35px rgba(52, 152, 219, 0.4));
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, white 0%, rgba(240,245,250,0.8) 100%);
+            color: var(--primary);
+            border: 2px solid rgba(52,152,219,0.2);
+        }
+        
+        .flashcard-back {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            transform: rotateY(180deg);
+            border: 2px solid rgba(52,152,219,0.3);
+        }
+        
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-section a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: var(--secondary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0.5rem;
+            }
+            
+            .search-bar {
+                margin: 1rem 0 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .subject-grid, .tools-grid, .resource-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .resource-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .user-info {
+                margin-top: 1rem;
+            }
+            
+            .ai-assistant-panel {
+                width: 90%;
+                height: 70%;
+                bottom: 1rem;
+                right: 5%;
+            }
+            
+            .quick-questions {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- API Settings Modal -->
+    <div id="api-settings-modal" class="api-settings-modal">
+        <div class="api-settings-content">
+            <div class="api-settings-header">
+                <h2>🔑 API Key Settings</h2>
+                <button type="button" class="api-close-btn" onclick="closeApiModal()">✕</button>
+            </div>
+
+            <form class="api-form" id="api-key-form">
+                <div class="api-form-group">
+                    <label for="openai-api-key">OpenAI API Key</label>
+                    <input type="password" id="openai-api-key" placeholder="sk-..." required>
+                    <div class="api-hint">
+                        Get your key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>. Your key is stored locally in your browser only.
+                    </div>
+                </div>
+
+                <div class="api-form-group">
+                    <label for="api-model">AI Model</label>
+                    <select id="api-model" style="padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; cursor: pointer;">
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Faster, Cheaper)</option>
+                        <option value="gpt-4">GPT-4 (More Powerful)</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo (Best Balance)</option>
+                    </select>
+                    <div class="api-hint">Choose the model that fits your needs and budget.</div>
+                </div>
+
+                <div class="api-form-buttons">
+                    <button type="submit" class="api-save-btn">💾 Save API Key</button>
+                    <button type="button" class="api-cancel-btn" onclick="closeApiModal()">Cancel</button>
+                </div>
+
+                <div class="api-status" id="api-status-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- API Settings Modal Overlay -->
+    <div class="api-modal-overlay" id="api-modal-overlay" onclick="closeApiModal()"></div>
+
+    <!-- Login Page -->
+    <div id="login-page">
+        <div class="login-container">
+            <h2 id="login-title">Login to MedStudy</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" required>
+                        <button type="button" class="toggle-password-btn" id="toggle-password-login" title="Show/Hide password">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="new-password" required>
+                        <button type="button" class="toggle-password-btn" id="toggle-password-new" title="Show/Hide password">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirm-password" required>
+                        <button type="button" class="toggle-password-btn" id="toggle-password-confirm" title="Show/Hide password">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+                <button id="toggle-form" class="toggle-form">Don't have an account? Sign up</button>
+                <button id="login-next-btn" type="button" class="login-next" aria-label="Proceed to onboarding" style="margin-top:0.8rem;padding:0.6rem 1rem;border-radius:8px;border:none;background:#2d9cdb;color:#fff;cursor:pointer;">Next →</button>
+        </div>
+    </div>
+
+    <!-- Onboarding Page (Profile Setup) -->
+    <div id="onboarding-page" class="hidden">
+        <div class="onboarding-container">
+            <div class="onboarding-header">
+                <div class="onboarding-logo">🩺</div>
+                <h2>Complete Your Profile</h2>
+                <p>Let's get to know you better!</p>
+            </div>
+
+            <form id="onboarding-form" class="onboarding-form">
+                <!-- UID Input -->
+                <div class="form-section">
+                    <label for="user-uid" class="form-label">
+                        <span class="label-icon">🆔</span>
+                        Your UID
+                    </label>
+                    <input type="text" id="user-uid" class="form-input" placeholder="Enter your unique ID (e.g., MED2024001)" required>
+                    <p class="form-hint">This helps us identify you in our system</p>
+                </div>
+
+                <!-- Department Selection -->
+                <div class="form-section">
+                    <label for="user-department" class="form-label">
+                        <span class="label-icon">🏥</span>
+                        Select Your Department
+                    </label>
+                    <div class="department-grid">
+                        <div class="dept-card" data-dept="Cardiovascular">
+                            <div class="dept-icon">❤️</div>
+                            <div class="dept-name">Cardiovascular</div>
+                        </div>
+                        <div class="dept-card" data-dept="Dermatology">
+                            <div class="dept-icon">🩹</div>
+                            <div class="dept-name">Dermatology</div>
+                        </div>
+                        <div class="dept-card" data-dept="Neurology">
+                            <div class="dept-icon">🧠</div>
+                            <div class="dept-name">Neurology</div>
+                        </div>
+                        <div class="dept-card" data-dept="Neurosurgery">
+                            <div class="dept-icon">⚕️</div>
+                            <div class="dept-name">Neurosurgery</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="user-department" required>
+                    <p class="form-hint" id="dept-hint">Select a department to continue</p>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="nav-btn nav-back" id="onboarding-back">← Back</button>
+                    <button type="submit" class="nav-btn nav-next onboarding-submit-btn">Continue to MedStudy →</button>
+                </div>
+            </form>
+
+            <div class="onboarding-footer">
+                <p>We'll use this information to personalize your learning experience</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Website (initially hidden) -->
+    <div id="main-website" class="hidden">
+        <!-- Header -->
+        <header>
+            <div class="container header-content">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="logo">
+                    <span class="logo-icon">🩺</span>
+                    <h1>MedStudy</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#subjects">Subjects</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                        <li><a href="#tools">Study Tools</a></li>
+                        <li><a href="#flashcards">Flashcards</a></li>
+                    </ul>
+                </nav>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search medical topics...">
+                    <button>Search</button>
+                </div>
+                <div class="profile-menu">
+                    <button class="profile-btn" id="profile-btn">
+                        <span class="profile-icon">👤</span>
+                        <span id="welcome-user" class="user-name">Welcome, User!</span>
+                    </button>
+                    <div class="profile-dropdown" id="profile-dropdown">
+                        <a href="#" class="dropdown-item">👤 My Profile</a>
+                        <a href="#" class="dropdown-item">⚙️ Settings</a>
+                        <a href="#" class="dropdown-item">📋 My Notes</a>
+                        <hr class="dropdown-divider">
+                        <button class="dropdown-item logout-item" id="logout-btn">🚪 Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <h3>3D Models</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="https://www.zygotebody.com/#nav=1.73,112.8,236.78,0,0,0,0&sel=p:;h:;s:1244;c:-0.6;o:-0.75&layers=0,1,6702" target="_blank" rel="noopener" class="sidebar-link" aria-label="Open 3D Human Anatomy (Zygote Body)">🧬 Human Anatomy</a></li>
+                        <li><a href="https://www.zygotebody.com/#nav=1.73,112.8,236.78,0,0,0,0&sel=p:;h:;s:1244;c:-0.6;o:-0.75&layers=0,1,6702" target="_blank" rel="noopener" class="sidebar-link" aria-label="Open 3D Virus Anatomy (Zygote Body)">🦠 Virus</a></li>
+                        <li><a href="#" class="sidebar-link">🧫 Bacteria</a></li>
+                        <li><a href="#" class="sidebar-link">❤️ Heart</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-section">
+                    <h3>Learning</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="#" class="sidebar-link">👥 Group Study Room</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-section">
+                    <h3>MBBS Course Structure</h3>
+                    <button class="course-toggle" id="course-toggle">▶ MBBS Course Structure</button>
+                    <div class="course-structure" id="course-structure" style="display: none;">
+                        <div class="year-section">
+                            <h4>1st Year</h4>
+                            <ul class="sidebar-menu">
+                                <li><a href="#" class="sidebar-link">📚 Anatomy</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Physiology</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Biochemistry</a></li>
+                            </ul>
+                        </div>
+                        <div class="year-section">
+                            <h4>2nd Year</h4>
+                            <ul class="sidebar-menu">
+                                <li><a href="#" class="sidebar-link">📚 Pathology</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Microbiology</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Pharmacology</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Forensic Medicine</a></li>
+                            </ul>
+                        </div>
+                        <div class="year-section">
+                            <h4>3rd Year Part 1</h4>
+                            <ul class="sidebar-menu">
+                                <li><a href="#" class="sidebar-link">📚 Community Medicine</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Ophthalmology</a></li>
+                                <li><a href="#" class="sidebar-link">📚 ENT</a></li>
+                            </ul>
+                        </div>
+                        <div class="year-section">
+                            <h4>3rd Year Part 2</h4>
+                            <ul class="sidebar-menu">
+                                <li><a href="#" class="sidebar-link">📚 General Medicine</a></li>
+                                <li><a href="#" class="sidebar-link">📚 General Surgery</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Obstetrics & Gynecology</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Pediatrics</a></li>
+                                <li><a href="#" class="sidebar-link">📚 Orthopedics</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-section">
+                    <h3>Quiz & Tests</h3>
+                    <button class="course-toggle" id="quiz-toggle">▶ Quiz & Tests</button>
+                    <div class="course-structure" id="quiz-structure" style="display: none;">
+                        <ul class="sidebar-menu">
+                            <li><a href="https://www.zygotebody.com/#nav=1.73,112.8,236.78,0,0,0,0&sel=p:;h:;s:1244;c:-0.6;o:-0.75&layers=0,1,6702" target="_blank" rel="noopener" class="sidebar-link" aria-label="Open 3D Anatomy (Zygote Body)">📝 Practice Quizzes</a></li>
+                            <li><a href="https://anatomy.app/quizzes" target="_blank" rel="noopener" class="sidebar-link" aria-label="Open Anatomy Quizzes">🏅 Mock Exams</a></li>
+                            <li><a href="#" class="sidebar-link">📊 Quiz Results</a></li>
+                            <li><a href="#" class="sidebar-link">⭐ Top Performers</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-section">
+                    <h3>Resources</h3>
+                    <div class="notes-section">
+                        <h4 style="color: white; margin: 0 2rem 1rem; font-size: 1rem;">📖 Get All MBBS Notes in One Click</h4>
+                        <p style="padding: 0 2rem; color: rgba(255,255,255,0.8); font-size: 0.85rem; line-height: 1.4;">Organized year-wise and subject-wise. Includes Anatomy, Physiology, Biochemistry, Pathology, Pharmacology, Microbiology, Medicine, Surgery, OBG, Pediatrics, and more. Perfect for exam preparation and quick revision.</p>
+                        <a href="#" class="download-notes-btn" onclick="window.open('https://your-notes-link.com', '_blank'); return false;" style="margin: 1rem 2rem 0; display: inline-block; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); padding: 0.7rem 1.5rem; border-radius: 8px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); border: 2px solid rgba(255,255,255,0.2); animation: pulse 2s infinite;">
+                            ⬇️ Download Notes
+                        </a>
+                    </div>
+                    <div style="margin-top: 1rem; padding: 1.5rem 2rem; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #a93226 100%); border-radius: 12px; margin-left: 2rem; margin-right: 2rem; box-shadow: 0 8px 32px rgba(231, 76, 60, 0.4); border-left: 5px solid #fff3e0;">
+                        <h4 style="color: white; margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">📄 Medical Study Materials</h4>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 1.2rem; font-weight: 500;">Complete 3rd & 4th Semester Syllabus - All Branches</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM AIML.pdf" target="_blank" aria-label="Download Anatomy and Imaging ML Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                🫀 Anatomy & Imaging
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM AI&DS.pdf" target="_blank" aria-label="Download Pathology and Diagnosis Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                🦠 Pathology & Diagnosis
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM CIVIL.pdf" target="_blank" aria-label="Download Clinical Studies Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                👨‍⚕️ Clinical Studies
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM CSE(AI).pdf" target="_blank" aria-label="Download Pharmacology Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                💊 Pharmacology
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM CSE(AIML).pdf" target="_blank" aria-label="Download Microbiology Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                🔬 Microbiology
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM CSE.pdf" target="_blank" aria-label="Download Physiology Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                💓 Physiology
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM DS.pdf" target="_blank" aria-label="Download Biochemistry Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                ⚗️ Biochemistry
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM EEE.pdf" target="_blank" aria-label="Download Pharmacotherapy Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                💉 Pharmacotherapy
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM ISE.pdf" target="_blank" aria-label="Download Immunology and Serology Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                🛡️ Immunology
+                            </a>
+                            <a href="file:///C:/Users/sachi/Videos/3RD & 4TH SEM CHANNEL/3rd & 4th SEM ME.pdf" target="_blank" aria-label="Download Medicine Syllabus" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff3e0, #ffe0b2); padding: 0.8rem 1rem; border-radius: 8px; color: #c0392b; text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); text-align: center; min-height: 45px; border: 2px solid transparent; cursor: pointer;">
+                                🏥 Medicine
+                            </a>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <h4 style="color: white; margin: 0 2rem 0.8rem; font-size: 0.95rem;">🔗 External Resources</h4>
+                        <a href="https://in2med.co.uk/" target="_blank" class="sidebar-link" style="margin: 0 2rem 0.5rem; display: inline-block; background: linear-gradient(135deg, #3498db, #2980b9); padding: 0.5rem 1rem; border-radius: 5px; color: white; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease;">
+                            🌐 in2med.co.uk
+                        </a>
+                        <p style="padding: 0 2rem; color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 0.5rem;">Medical education resources and study materials</p>
+                    </div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <div class="sidebar-footer">
+                    <small style="color: rgba(255,255,255,0.7);">MedStudy v1.0</small>
+                </div>
+            </div>
+        </aside>
+
+        <!-- AI Assistant Button -->
+        <button class="ai-assistant-btn pulse" id="ai-assistant-btn">🤖</button>
+
+        <!-- AI Assistant Panel -->
+        <div class="ai-assistant-panel" id="ai-assistant-panel">
+            <div class="ai-header">
+                <h3><span>🤖</span> MedStudy AI Assistant</h3>
+                <button class="close-ai" id="close-ai">✕</button>
+            </div>
+            <div class="ai-conversation" id="ai-conversation">
+                <div class="ai-message bot">
+                    Hello! I'm your MedStudy AI Assistant. I can help explain medical concepts, answer questions, and assist with your studies. How can I help you today?
+                </div>
+            </div>
+            <div class="quick-questions">
+                <button class="quick-question" data-question="Explain the renin-angiotensin system">Renin-angiotensin system</button>
+                <button class="quick-question" data-question="What are the branches of the external carotid artery?">External carotid branches</button>
+                <button class="quick-question" data-question="Differentiate between type 1 and type 2 diabetes">Type 1 vs Type 2 diabetes</button>
+                <button class="quick-question" data-question="List the cranial nerves and their functions">Cranial nerves</button>
+            </div>
+            <div class="ai-input">
+                <input type="text" id="ai-input" placeholder="Ask a medical question...">
+                <button id="ai-voice-input" title="Speak question" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.5rem; color: #3498db;">🎤</button>
+                <button id="ai-send">➤</button>
+            </div>
+            <div style="text-align: center; padding: 0.5rem; font-size: 0.8rem; color: rgba(255,255,255,0.6);">
+                <button id="ai-voice-output" title="Toggle voice response" style="background: linear-gradient(135deg, #3498db, #2980b9); border: none; padding: 0.4rem 0.8rem; border-radius: 4px; color: white; cursor: pointer; font-size: 0.8rem; margin-right: 0.5rem;">🔊 Voice ON</button>
+                <span id="voice-status" style="display: none;">Listening...</span>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <!-- DNA Background Animation -->
+            <div class="dna-background">
+                <svg width="600" height="400" viewBox="0 0 600 400" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <defs>
+                        <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#27ae60;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Left Helix Strand (Blue) - Intertwining -->
+                    <g class="dna-strand" style="animation: dnaMoveLeftRight 8s ease-in-out infinite;">
+                        <!-- Top half of left strand going right -->
+                        <circle cx="100" cy="50" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="140" cy="80" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="180" cy="110" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="220" cy="140" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="260" cy="170" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="300" cy="200" r="9" fill="url(#blueGrad)"/>
+                        
+                        <!-- Bottom half of left strand coming back left -->
+                        <circle cx="340" cy="230" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="380" cy="260" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="420" cy="290" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="460" cy="320" r="9" fill="url(#blueGrad)"/>
+                        <circle cx="500" cy="350" r="9" fill="url(#blueGrad)"/>
+                        
+                        <!-- Left backbone curve -->
+                        <path d="M 100 50 Q 120 65 140 80 Q 160 95 180 110 Q 200 125 220 140 Q 240 155 260 170 Q 280 185 300 200 Q 320 215 340 230 Q 360 245 380 260 Q 400 275 420 290 Q 440 305 460 320 Q 480 335 500 350" 
+                              stroke="url(#blueGrad)" stroke-width="2" fill="none" opacity="0.5"/>
+                    </g>
+                    
+                    <!-- Right Helix Strand (Green) - Intertwining opposite -->
+                    <g class="dna-strand" style="animation: dnaMoveRightLeft 8s ease-in-out infinite;">
+                        <!-- Top half of right strand going left -->
+                        <circle cx="500" cy="50" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="460" cy="80" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="420" cy="110" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="380" cy="140" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="340" cy="170" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="300" cy="200" r="9" fill="url(#greenGrad)"/>
+                        
+                        <!-- Bottom half of right strand coming back right -->
+                        <circle cx="260" cy="230" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="220" cy="260" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="180" cy="290" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="140" cy="320" r="9" fill="url(#greenGrad)"/>
+                        <circle cx="100" cy="350" r="9" fill="url(#greenGrad)"/>
+                        
+                        <!-- Right backbone curve -->
+                        <path d="M 500 50 Q 480 65 460 80 Q 440 95 420 110 Q 400 125 380 140 Q 360 155 340 170 Q 320 185 300 200 Q 280 215 260 230 Q 240 245 220 260 Q 200 275 180 290 Q 160 305 140 320 Q 120 335 100 350" 
+                              stroke="url(#greenGrad)" stroke-width="2" fill="none" opacity="0.5"/>
+                    </g>
+                    
+                    <!-- Base Pair Connectors (Purple) - connecting the two strands -->
+                    <line x1="100" y1="50" x2="500" y2="50" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="140" y1="80" x2="460" y2="80" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="180" y1="110" x2="420" y2="110" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="220" y1="140" x2="380" y2="140" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="260" y1="170" x2="340" y2="170" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="300" y1="200" x2="300" y2="200" stroke="#e74c3c" stroke-width="4" opacity="0.8"/>
+                    <line x1="340" y1="230" x2="260" y2="230" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="380" y1="260" x2="220" y2="260" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="420" y1="290" x2="180" y2="290" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="460" y1="320" x2="140" y2="320" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                    <line x1="500" y1="350" x2="100" y2="350" stroke="#9b59b6" stroke-width="2.5" opacity="0.6"/>
+                </svg>
+            </div>
+            
+            <div class="container" style="position: relative; z-index: 1;">
+                <h2>Comprehensive Medical Study Resources</h2>
+                <p>Access high-quality study materials, flashcards, quizzes, and more to excel in your medical education.</p>
+                <a href="#subjects" class="cta-button">Explore Subjects</a>
+            </div>
+        </section>
+
+        <!-- Animated Quote Section -->
+        <section class="quote-section">
+            <div class="quote-container">
+                <div class="quote-content">
+                    <span class="quote-mark">"</span>
+                    <span class="quote-text">Wherever the art of medicine is loved, there is also a love of humanity.</span>
+                    <span class="quote-mark">"</span>
+                    <span class="quote-author">— Hippocrates</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content container">
+            <!-- Progress Section -->
+            <section id="progress">
+                <h2 class="section-title">Your Learning Progress</h2>
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <h3>Overall Progress</h3>
+                        <span id="overall-progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overall-progress-bar" style="width: 0%"></div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Anatomy</span>
+                            <span id="anatomy-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="anatomy-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Physiology</span>
+                            <span id="physiology-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="physiology-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Pathology</span>
+                            <span id="pathology-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="pathology-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Pharmacology</span>
+                            <span id="pharmacology-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="pharmacology-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subjects Section -->
+            <section id="subjects">
+                <h2 class="section-title">Medical Subjects</h2>
+                <div class="subject-grid">
+                    <!-- Anatomy Card -->
+                    <div class="subject-card">
+                        <div class="card-header">
+                            <h3>Anatomy</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><a href="#" class="resource-link" data-subject="anatomy" data-topic="gross">Gross Anatomy</a></li>
+                                <li><a href="#" class="resource-link" data-subject="anatomy" data-topic="neuro">Neuroanatomy</a></li>
+                                <li><a href="#" class="resource-link" data-subject="anatomy" data-topic="embryo">Embryology</a></li>
+                                <li><a href="#" class="resource-link" data-subject="anatomy" data-topic="histo">Histology</a></li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn">View All Resources</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Physiology Card -->
+                    <div class="subject-card">
+                        <div class="card-header">
+                            <h3>Physiology</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><a href="#" class="resource-link" data-subject="physiology" data-topic="cardio">Cardiovascular System</a></li>
+                                <li><a href="#" class="resource-link" data-subject="physiology" data-topic="respiratory">Respiratory System</a></li>
+                                <li><a href="#" class="resource-link" data-subject="physiology" data-topic="renal">Renal Physiology</a></li>
+                                <li><a href="#" class="resource-link" data-subject="physiology" data-topic="endocrine">Endocrinology</a></li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn">View All Resources</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Pathology Card -->
+                    <div class="subject-card">
+                        <div class="card-header">
+                            <h3>Pathology</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><a href="#" class="resource-link" data-subject="pathology" data-topic="general">General Pathology</a></li>
+                                <li><a href="#" class="resource-link" data-subject="pathology" data-topic="systemic">Systemic Pathology</a></li>
+                                <li><a href="#" class="resource-link" data-subject="pathology" data-topic="hematology">Hematology</a></li>
+                                <li><a href="#" class="resource-link" data-subject="pathology" data-topic="oncology">Oncology</a></li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn">View All Resources</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Pharmacology Card -->
+                    <div class="subject-card">
+                        <div class="card-header">
+                            <h3>Pharmacology</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><a href="#" class="resource-link" data-subject="pharmacology" data-topic="autonomic">Autonomic Drugs</a></li>
+                                <li><a href="#" class="resource-link" data-subject="pharmacology" data-topic="cardio">Cardiovascular Drugs</a></li>
+                                <li><a href="#" class="resource-link" data-subject="pharmacology" data-topic="antimicrobial">Antimicrobials</a></li>
+                                <li><a href="#" class="resource-link" data-subject="pharmacology" data-topic="cns">CNS Drugs</a></li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn">View All Resources</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="resources">
+                <div class="container">
+                    <h2 class="section-title">Study Resources</h2>
+                    <div class="resource-tabs">
+                        <button class="tab-btn active" data-tab="textbooks">Textbooks</button>
+                        <button class="tab-btn" data-tab="videos">Video Lectures</button>
+                        <button class="tab-btn" data-tab="question-banks">Question Banks</button>
+                        <button class="tab-btn" data-tab="mnemonics">Mnemonics</button>
+                        <button class="tab-btn" data-tab="3d-models">3D Models</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="textbooks">
+                        <div class="resource-list">
+                            <div class="resource-item" data-resource="grays-anatomy">
+                                <div class="resource-icon">📚</div>
+                                <h3>Gray's Anatomy</h3>
+                                <p>Comprehensive anatomy reference</p>
+                            </div>
+                            <div class="resource-item" data-resource="guyton-physiology">
+                                <div class="resource-icon">📚</div>
+                                <h3>Guyton Physiology</h3>
+                                <p>Medical physiology textbook</p>
+                            </div>
+                            <div class="resource-item" data-resource="robbins-pathology">
+                                <div class="resource-icon">📚</div>
+                                <h3>Robbins Pathology</h3>
+                                <p>Pathology basis of disease</p>
+                            </div>
+                            <div class="resource-item" data-resource="katzung-pharmacology">
+                                <div class="resource-icon">📚</div>
+                                <h3>Katzung Pharmacology</h3>
+                                <p>Pharmacology & therapeutics</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="videos">
+                        <div class="resource-list">
+                            <div class="resource-item" data-resource="anatomy-videos">
+                                <div class="resource-icon">🎬</div>
+                                <h3>Anatomy Lectures</h3>
+                                <p>Complete dissection videos</p>
+                            </div>
+                            <div class="resource-item" data-resource="physiology-videos">
+                                <div class="resource-icon">🎬</div>
+                                <h3>Physiology Explained</h3>
+                                <p>System-by-system breakdown</p>
+                            </div>
+                            <div class="resource-item" data-resource="clinical-skills">
+                                <div class="resource-icon">🎬</div>
+                                <h3>Clinical Skills</h3>
+                                <p>Patient examination techniques</p>
+                            </div>
+                            <div class="resource-item" data-resource="pathology-cases">
+                                <div class="resource-icon">🎬</div>
+                                <h3>Pathology Cases</h3>
+                                <p>Real case discussions</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="3d-models">
+                        <div class="resource-list">
+                            <div class="resource-item" data-resource="zygotebody-3d">
+                                <div class="resource-icon">🧭</div>
+                                <h3>3D Anatomy — Zygote Body</h3>
+                                <p>Interactive 3D human anatomy (Zygote Body).</p>
+                                <div style="margin-top:0.6rem;">
+                                    <a href="https://www.zygotebody.com/#nav=1.73,112.8,236.78,0,0,0,0&sel=p:;h:;s:1244;c:-0.6;o:-0.75&layers=0,1,6702" target="_blank" rel="noopener" class="external-resource btn" style="text-decoration:none;padding:0.45rem 0.8rem;border-radius:6px;background:linear-gradient(135deg,#2d9cdb,#217db8);color:#fff;display:inline-block;">Open 3D Anatomy</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Study Tools Section -->
+            <section id="tools">
+                <h2 class="section-title">Study Tools</h2>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">📝</div>
+                        <h3>Note Templates</h3>
+                        <p>Organized templates for efficient note-taking</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">📊</div>
+                        <h3>Progress Tracker</h3>
+                        <p>Monitor your study progress and performance</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">🧠</div>
+                        <h3>Spaced Repetition</h3>
+                        <p>Optimize memory retention with SRS</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">👥</div>
+                        <h3>Study Groups</h3>
+                        <p>Connect with peers for collaborative learning</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Flashcards Section -->
+            <section id="flashcards" class="flashcard-section">
+                <div class="container">
+                    <h2 class="section-title" style="color: white;">Interactive Flashcards</h2>
+                    <div class="flashcard-container">
+                        <div class="flashcard" id="flashcard">
+                            <div class="flashcard-front">
+                                <h3>Question</h3>
+                                <p id="flashcard-question">What is the most common cause of hypercalcemia in hospitalized patients?</p>
+                                <p><small>Click to flip</small></p>
+                            </div>
+                            <div class="flashcard-back">
+                                <h3>Answer</h3>
+                                <p id="flashcard-answer">Malignancy</p>
+                                <p><small>Click to flip back</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-controls">
+                        <button class="btn" id="prev-card">Previous</button>
+                        <button class="btn" id="next-card">Next</button>
+                        <button class="btn" id="shuffle-cards">Shuffle</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>MedStudy</h3>
+                        <p>Your comprehensive medical education platform with curated resources for medical students.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="#subjects">Subjects</a></li>
+                            <li><a href="#resources">Resources</a></li>
+                            <li><a href="#tools">Study Tools</a></li>
+                            <li><a href="#flashcards">Flashcards</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Contact Us</h3>
+                        <ul>
+                            <li>Email: medstudyinfo05@gmail.com</li>
+                            <li>Phone: +91 9686764816</li>
+                            <li>Address: Banglore, Karnataka</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2025 MedStudy. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Global Next / Previous Buttons -->
+        <div id="global-nav" style="position:fixed;right:18px;bottom:18px;z-index:2000;display:flex;flex-direction:column;gap:8px;">
+            <button id="prev-page-btn" title="Previous" style="width:56px;height:44px;border-radius:10px;border:none;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.12);cursor:pointer;">◀</button>
+            <button id="next-page-btn" title="Next" style="width:56px;height:44px;border-radius:10px;border:none;background:#3498db;color:#fff;box-shadow:0 6px 18px rgba(52,152,219,0.28);cursor:pointer;">▶</button>
+        </div>
+    </div>
+
+            <script>
+        // Initialize default API key if not already set
+        const DEFAULT_API_KEY = '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';
+        
+        // Set default API settings if none exist
+        if (!localStorage.getItem('medstudyApiSettings')) {
+            localStorage.setItem('medstudyApiSettings', JSON.stringify({
+                apiKey: DEFAULT_API_KEY,
+                apiModel: 'gpt-3.5-turbo',
+                savedAt: new Date().toISOString()
+            }));
+        }
+        
+        // User Management
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('medstudy_users')) || {};
+
+        // Ensure some default demo accounts exist (merge without overwriting existing users)
+        const defaultUsers = {
+            'demo': {
+                password: 'demo123',
+                progress: { anatomy: 85, physiology: 60, pathology: 50, pharmacology: 70 },
+                completedResources: [],
+                department: 'MBBS'
+            },
+            'student': {
+                password: 'student123',
+                progress: { anatomy: 65, physiology: 72, pathology: 58, pharmacology: 81 },
+                completedResources: [],
+                department: 'MBBS'
+            },
+            'medstudent': {
+                password: 'medstudent123',
+                progress: { anatomy: 95, physiology: 88, pathology: 76, pharmacology: 89 },
+                completedResources: [],
+                department: 'MBBS'
+            }
+        };
+
+        for (const [k, v] of Object.entries(defaultUsers)) {
+            if (!users[k]) users[k] = v;
+        }
+
+        // Persist merged users back to localStorage so future loads use these defaults
+        localStorage.setItem('medstudy_users', JSON.stringify(users));
+        
+        // AI Knowledge Base
+        const aiKnowledgeBase = {
+            // BASIC MEDICAL Q&A
+            "normal blood pressure": "The normal blood pressure of an adult is 120/80 mmHg. Systolic pressure (top number) of less than 120 and diastolic pressure (bottom number) of less than 80 is considered normal. Elevated BP is 120-129/<80, Stage 1 hypertension is 130-139/80-89, and Stage 2 hypertension is ≥140/≥90 mmHg.",
+            
+            "normal heart rate": "The normal heart rate for adults is 60–100 beats per minute (bpm) at rest. Athletes may have lower resting heart rates (40-60 bpm) due to better cardiovascular fitness. Heart rate increases with fever, stress, exercise, and certain medications. Tachycardia is defined as >100 bpm at rest, and bradycardia is <60 bpm.",
+            
+            "homeostasis": "Homeostasis is the process by which the body maintains a stable internal environment despite external changes. It involves the regulation of temperature, pH, oxygen/carbon dioxide levels, glucose concentration, and fluid balance. Homeostatic mechanisms work through negative feedback loops where deviation from normal triggers responses to restore equilibrium.",
+            
+            "hemoglobin": "Hemoglobin is a protein in red blood cells that carries oxygen from the lungs to the body and returns carbon dioxide to the lungs for exhalation. Each hemoglobin molecule consists of 4 globin chains (2 alpha, 2 beta) and 4 heme groups, each containing iron. Normal hemoglobin levels are 13.5-17.5 g/dL in males and 12.0-15.5 g/dL in females.",
+            
+            "immunity": "Immunity is the body's ability to fight infections and diseases. It involves two main components: innate immunity (non-specific, includes physical barriers, complement system, phagocytes) and adaptive immunity (specific, includes antibodies and T cells). Active immunity develops from vaccination or natural infection, while passive immunity is obtained from antibodies (maternal or therapeutic).",
+            
+            // CLINICAL Q&A
+            "first-line treatment for fever": "The first-line treatment for fever is paracetamol (acetaminophen) and adequate hydration. Paracetamol acts as an antipyretic by resetting the hypothalamic thermostat. Typical dose is 500-1000 mg every 4-6 hours (max 4000 mg/day). NSAIDs like ibuprofen are alternatives. Supportive measures include rest, light clothing, and increasing fluid intake to prevent dehydration.",
+            
+            "hypertension definition": "Hypertension is a condition where blood pressure is consistently above 140/90 mmHg or sustained above 130/80 mmHg (per newer guidelines). Primary (essential) hypertension accounts for 90-95% of cases with no identifiable cause. Secondary hypertension (5-10%) results from underlying conditions like kidney disease, pheochromocytoma, or coarctation of aorta.",
+            
+            "diabetes symptoms": "The symptoms of diabetes include increased thirst (polydipsia), frequent urination (polyuria), unexplained weight loss, fatigue, blurred vision, frequent infections, and slow wound healing. Additional symptoms may include numbness/tingling in hands or feet (neuropathy) and fruity-smelling breath (in diabetic ketoacidosis). Early detection and management prevent complications.",
+            
+            "anemia definition": "Anemia is a condition where the hemoglobin level is low, leading to reduced oxygen-carrying capacity of the blood. This results in fatigue, weakness, shortness of breath, and dizziness. Causes include blood loss, decreased RBC production (iron deficiency, B12 deficiency, aplastic anemia), and increased RBC destruction (hemolytic anemia).",
+            
+            "jaundice causes": "Jaundice occurs due to excess bilirubin in the blood causing yellowing of skin and sclera. Main causes include: 1) Prehepatic (hemolysis), 2) Hepatic (liver damage from hepatitis, cirrhosis, alcoholism), 3) Posthepatic (bile duct obstruction from gallstones, pancreatic cancer). Investigation includes LFTs, ultrasound, and sometimes MRI.",
+            
+            // ANATOMY
+            "largest organ human body": "The largest organ in the human body is the skin. It covers approximately 1.5-2 square meters and weighs about 3.5-4.5 kg (15-16% of body weight). Functions include protection from infection and dehydration, temperature regulation, sensation, and vitamin D synthesis. If considering internal organs, the liver is the largest.",
+            
+            // PHYSIOLOGY
+            "kidney function": "The function of the kidney includes: 1) Filtration of blood to remove waste products and excess water, 2) Reabsorption of useful substances (glucose, amino acids, electrolytes), 3) Secretion of additional waste into filtrate, 4) Maintaining fluid and electrolyte balance, 5) Regulating blood pressure through renin-angiotensin system, 6) Red blood cell production (erythropoietin), 7) Vitamin D activation.",
+            
+            // BIOCHEMISTRY
+            "ATP adenosine triphosphate": "ATP (Adenosine Triphosphate) is the energy currency of the cell. It consists of adenosine (nucleoside) and three phosphate groups. Energy is released when the terminal high-energy phosphate bond is cleaved, releasing ~7.3 kcal/mol under cellular conditions. This energy drives cellular processes like muscle contraction, active transport, and biosynthesis. ATP is regenerated through glycolysis, citric acid cycle, and oxidative phosphorylation.",
+            
+            // PATHOLOGY
+            "inflammation": "Inflammation is the body's response to injury or infection, characterized by the classic signs: redness (rubor), heat (calor), swelling (tumor), and pain (dolor). Additional signs include loss of function. Acute inflammation is mediated by chemical mediators (histamine, prostaglandins, leukotrienes) and involves vasodilation, increased vascular permeability, and leukocyte infiltration. Chronic inflammation persists for weeks to months.",
+            
+            // PHARMACOLOGY
+            "antibiotic definition": "An antibiotic is a drug used to kill or inhibit the growth of bacteria (bactericidal or bacteriostatic respectively). Classes include: 1) Beta-lactams (penicillins, cephalosporins), 2) Aminoglycosides, 3) Tetracyclines, 4) Macrolides, 5) Fluoroquinolones, 6) Glycopeptides. Antibiotics work by disrupting cell wall synthesis, protein synthesis, DNA replication, or metabolism.",
+            
+            // ORIGINAL CONTENT
+            "renin-angiotensin system": "The renin-angiotensin system (RAS) is a hormone system that regulates blood pressure and fluid balance. When renal blood flow is reduced, juxtaglomerular cells in the kidneys convert prorenin to renin, which is released into circulation. Renin converts angiotensinogen (produced by the liver) to angiotensin I. Angiotensin I is then converted to angiotensin II by angiotensin-converting enzyme (ACE) in the lungs. Angiotensin II causes vasoconstriction and stimulates aldosterone release from adrenal cortex, leading to sodium and water retention.",
+            
+            "external carotid artery branches": "The external carotid artery has 8 major branches: 1) Superior thyroid artery, 2) Ascending pharyngeal artery, 3) Lingual artery, 4) Facial artery, 5) Occipital artery, 6) Posterior auricular artery, 7) Maxillary artery, 8) Superficial temporal artery. Mnemonic: Some Anatomists Like Freaking Out Poor Medical Students.",
+            
+            "type 1 vs type 2 diabetes": "Type 1 diabetes is an autoimmune condition where the body attacks insulin-producing beta cells in the pancreas, leading to absolute insulin deficiency. It typically presents in childhood/young adulthood. Type 2 diabetes involves insulin resistance and relative insulin deficiency, often associated with obesity and older age. Treatment differs: Type 1 requires insulin, while Type 2 may be managed with oral medications, lifestyle changes, and sometimes insulin.",
+            
+            "cranial nerves": "There are 12 cranial nerves: I Olfactory (smell), II Optic (vision), III Oculomotor (eye movement, pupil constriction), IV Trochlear (eye movement), V Trigeminal (facial sensation, chewing), VI Abducens (eye movement), VII Facial (facial expression, taste), VIII Vestibulocochlear (hearing, balance), IX Glossopharyngeal (swallowing, taste), X Vagus (parasympathetic, swallowing), XI Accessory (neck movement), XII Hypoglossal (tongue movement). Mnemonic: Oh Oh Oh To Touch And Feel Very Good Velvet AH.",
+            
+            "myocardial infarction": "Myocardial infarction (heart attack) occurs when blood flow to part of the heart muscle is blocked, usually by a blood clot forming on a ruptured atherosclerotic plaque. Symptoms include chest pain/pressure, shortness of breath, nausea, and sweating. Diagnosis involves ECG changes (ST elevation) and elevated cardiac enzymes (troponin). Treatment includes aspirin, nitroglycerin, oxygen, morphine, and reperfusion therapy (thrombolytics or PCI).",
+            
+            "pneumonia": "Pneumonia is an infection that inflames air sacs in one or both lungs, which may fill with fluid. Causes include bacteria (Streptococcus pneumoniae most common), viruses, and fungi. Symptoms include cough with phlegm, fever, chills, and difficulty breathing. Treatment depends on cause and severity, ranging from oral antibiotics to hospitalization with IV antibiotics and oxygen therapy.",
+            
+            "asthma": "Asthma is a chronic inflammatory disorder of the airways characterized by reversible airflow obstruction and bronchospasm. Symptoms include wheezing, coughing, chest tightness, and shortness of breath. Triggers include allergens, exercise, cold air, and respiratory infections. Treatment involves quick-relief medications (bronchodilators like albuterol) and long-term control medications (inhaled corticosteroids)."
+        };
+        
+        // DOM Elements
+        const entryAnimation = document.getElementById('entry-animation');
+        const loginPage = document.getElementById('login-page');
+        const onboardingPage = document.getElementById('onboarding-page');
+        const mainWebsite = document.getElementById('main-website');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const toggleFormBtn = document.getElementById('toggle-form');
+        const loginTitle = document.getElementById('login-title');
+        const welcomeUser = document.getElementById('welcome-user');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginNextBtn = document.getElementById('login-next-btn');
+        
+        // AI Elements
+        const aiAssistantBtn = document.getElementById('ai-assistant-btn');
+        const aiAssistantPanel = document.getElementById('ai-assistant-panel');
+        const closeAi = document.getElementById('close-ai');
+        const aiConversation = document.getElementById('ai-conversation');
+        const aiInput = document.getElementById('ai-input');
+        const aiSend = document.getElementById('ai-send');
+        const quickQuestions = document.querySelectorAll('.quick-question');
+        
+        // Progress Elements
+        const overallProgress = document.getElementById('overall-progress');
+        const overallProgressBar = document.getElementById('overall-progress-bar');
+        const anatomyProgress = document.getElementById('anatomy-progress');
+        const anatomyProgressBar = document.getElementById('anatomy-progress-bar');
+        const physiologyProgress = document.getElementById('physiology-progress');
+        const physiologyProgressBar = document.getElementById('physiology-progress-bar');
+        const pathologyProgress = document.getElementById('pathology-progress');
+        const pathologyProgressBar = document.getElementById('pathology-progress-bar');
+        const pharmacologyProgress = document.getElementById('pharmacology-progress');
+        const pharmacologyProgressBar = document.getElementById('pharmacology-progress-bar');
+        
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const loggedInUser = localStorage.getItem('medstudy_current_user');
+            if (loggedInUser && users[loggedInUser]) {
+                currentUser = loggedInUser;
+                
+                // Check if user has completed onboarding
+                const userHasDept = users[loggedInUser].department;
+                if (userHasDept) {
+                    // User completed onboarding, show main website
+                    showMainWebsite();
+                } else {
+                    // User needs to complete onboarding
+                    showOnboardingPage();
+                }
+                updateProgressDisplay();
+            } else {
+                // Show login page after animation
+                setTimeout(() => {
+                    loginPage.style.display = 'flex';
+                }, 3500);
+            }
+        }
+
+        // Login -> Onboarding 'Next' button (skip/login flow)
+        if (loginNextBtn) {
+            loginNextBtn.addEventListener('click', function() {
+                // Navigate to onboarding page using existing nav helper
+                const onboardingIdx = typeof navOrder !== 'undefined' ? navOrder.indexOf('onboarding-page') : -1;
+                if (typeof goToIndex === 'function' && onboardingIdx !== -1) {
+                    goToIndex(onboardingIdx);
+                } else {
+                    // Fallback: show onboarding directly
+                    loginPage.style.display = 'none';
+                    onboardingPage.classList.remove('hidden');
+                    mainWebsite.classList.add('hidden');
+                    window.scrollTo(0,0);
+                }
+            });
+        }
+        
+        // Show onboarding page
+        function showOnboardingPage() {
+            loginPage.style.display = 'none';
+            onboardingPage.classList.remove('hidden');
+        }
+
+        // Show main website
+        function showMainWebsite() {
+            loginPage.style.display = 'none';
+            onboardingPage.classList.add('hidden');
+            mainWebsite.classList.remove('hidden');
+            welcomeUser.textContent = `Welcome, ${currentUser}!`;
+        }
+        
+        // Update progress display
+        function updateProgressDisplay() {
+            // If no user is logged in, show attractive demo progress values
+            if (!currentUser || !users[currentUser]) {
+                const demoProgress = {
+                    anatomy: 85,
+                    physiology: 60,
+                    pathology: 50,
+                    pharmacology: 70
+                };
+
+                const totalProgress = (demoProgress.anatomy + demoProgress.physiology + demoProgress.pathology + demoProgress.pharmacology) / 4;
+
+                overallProgress.textContent = `${Math.round(totalProgress)}%`;
+                overallProgressBar.style.width = `${totalProgress}%`;
+
+                anatomyProgress.textContent = `${demoProgress.anatomy}%`;
+                anatomyProgressBar.style.width = `${demoProgress.anatomy}%`;
+
+                physiologyProgress.textContent = `${demoProgress.physiology}%`;
+                physiologyProgressBar.style.width = `${demoProgress.physiology}%`;
+
+                pathologyProgress.textContent = `${demoProgress.pathology}%`;
+                pathologyProgressBar.style.width = `${demoProgress.pathology}%`;
+
+                // Also set pharmacology
+                document.getElementById('pharmacology-progress').textContent = `${demoProgress.pharmacology}%`;
+                document.getElementById('pharmacology-progress-bar').style.width = `${demoProgress.pharmacology}%`;
+
+                return;
+            }
+
+            const userData = users[currentUser] || {};
+            const progress = userData.progress || {};
+
+            // Coerce progress values to numbers and default to 0 to avoid NaN/undefined
+            const anat = Number(progress.anatomy) || 0;
+            const phys = Number(progress.physiology) || 0;
+            const path = Number(progress.pathology) || 0;
+            const pharm = Number(progress.pharmacology) || 0;
+
+            // Calculate overall progress
+            const totalProgress = (anat + phys + path + pharm) / 4;
+
+            // Ensure totalProgress is a finite number
+            const totalRounded = Number.isFinite(totalProgress) ? Math.round(totalProgress) : 0;
+
+            // Update progress bars (use numeric values)
+            overallProgress.textContent = `${totalRounded}%`;
+            overallProgressBar.style.width = `${totalRounded}%`;
+
+            anatomyProgress.textContent = `${anat}%`;
+            anatomyProgressBar.style.width = `${anat}%`;
+
+            physiologyProgress.textContent = `${phys}%`;
+            physiologyProgressBar.style.width = `${phys}%`;
+
+            pathologyProgress.textContent = `${path}%`;
+            pathologyProgressBar.style.width = `${path}%`;
+
+            pharmacologyProgress.textContent = `${pharm}%`;
+            pharmacologyProgressBar.style.width = `${pharm}%`;
+            
+            // Update completed resources
+            const completedResources = userData.completedResources || [];
+            document.querySelectorAll('.resource-item').forEach(item => {
+                const resourceId = item.getAttribute('data-resource');
+                if (completedResources.includes(resourceId)) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+        }
+        
+        // Update user progress
+        function updateProgress(subject, increment = 5) {
+            if (!currentUser || !users[currentUser]) return;
+            
+            if (!users[currentUser].progress) {
+                users[currentUser].progress = {
+                    anatomy: 0,
+                    physiology: 0,
+                    pathology: 0,
+                    pharmacology: 0
+                };
+            }
+            
+            // Increase progress for the subject, but not beyond 100%
+            users[currentUser].progress[subject] = Math.min(
+                100, 
+                users[currentUser].progress[subject] + increment
+            );
+            
+            // Save to localStorage
+            localStorage.setItem('medstudy_users', JSON.stringify(users));
+            
+            // Update display
+            updateProgressDisplay();
+        }
+        
+        // Mark resource as completed
+        function markResourceCompleted(resourceId) {
+            if (!currentUser || !users[currentUser]) return;
+            
+            if (!users[currentUser].completedResources) {
+                users[currentUser].completedResources = [];
+            }
+            
+            if (!users[currentUser].completedResources.includes(resourceId)) {
+                users[currentUser].completedResources.push(resourceId);
+                localStorage.setItem('medstudy_users', JSON.stringify(users));
+                updateProgressDisplay();
+            }
+        }
+        
+        // AI Assistant Functions
+        function toggleAIPanel() {
+            aiAssistantPanel.classList.toggle('active');
+            aiAssistantBtn.classList.toggle('pulse');
+        }
+        
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.textContent = message;
+            aiConversation.appendChild(messageDiv);
+            aiConversation.scrollTop = aiConversation.scrollHeight;
+            
+            // Speak bot messages if voice is enabled
+            if (!isUser && voiceOutputEnabled) {
+                speakText(message);
+            }
+        }
+        
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-typing';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            typingDiv.id = 'typing-indicator';
+            aiConversation.appendChild(typingDiv);
+            aiConversation.scrollTop = aiConversation.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function processAIQuestion(question) {
+            // Add user message
+            addMessage(question, true);
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Clear input
+            aiInput.value = '';
+            
+            // Simulate AI processing delay
+            setTimeout(() => {
+                hideTypingIndicator();
+                
+                // Find the best matching response
+                let bestMatch = null;
+                let bestMatchScore = 0;
+                
+                for (const [key, value] of Object.entries(aiKnowledgeBase)) {
+                    const score = calculateMatchScore(question.toLowerCase(), key.toLowerCase());
+                    if (score > bestMatchScore) {
+                        bestMatchScore = score;
+                        bestMatch = value;
+                    }
+                }
+                
+                // If we have a good match, use it
+                if (bestMatchScore > 0.2) {
+                    addMessage(bestMatch);
+                } else {
+                    // Try to use OpenAI API for unknown topics
+                    queryOpenAIForMedicalQuestion(question);
+                }
+            }, 1500);
+        }
+        
+        function queryOpenAIForMedicalQuestion(question) {
+            const apiSettings = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+            const apiKey = apiSettings.apiKey;
+            
+            if (!apiKey) {
+                addMessage("I don't have that in my knowledge base, but I can help if you configure an OpenAI API key. Go to your profile settings and add an API key to enable AI responses for broader topics.");
+                return;
+            }
+            
+            // Call OpenAI API
+            fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: apiSettings.apiModel || 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'You are a medical education assistant for medical students. Provide accurate, concise medical information to help students understand concepts. Keep responses under 200 words.'
+                        },
+                        {
+                            role: 'user',
+                            content: question
+                        }
+                    ],
+                    max_tokens: 300
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.choices && data.choices.length > 0) {
+                    const answer = data.choices[0].message.content;
+                    addMessage(answer);
+                } else if (data.error) {
+                    addMessage(`API Error: ${data.error.message}. Please check your API key in settings.`);
+                } else {
+                    addMessage("I couldn't generate a response. Try asking another question or check your API settings.");
+                }
+            })
+            .catch(error => {
+                addMessage(`Sorry, I encountered an error: ${error.message}. This might be a network issue or invalid API key.`);
+            });
+        }
+        
+        function calculateMatchScore(question, keyword) {
+            // Split question into words
+            const questionWords = question.split(/\s+/);
+            const keywordWords = keyword.split(/\s+/);
+            let score = 0;
+            
+            // Award points for each matching word
+            for (const qWord of questionWords) {
+                for (const kWord of keywordWords) {
+                    if (kWord.includes(qWord) && qWord.length > 2) {
+                        score += 1;
+                    } else if (qWord.includes(kWord) && kWord.length > 2) {
+                        score += 0.5;
+                    }
+                }
+            }
+            
+            return score / questionWords.length;
+        }
+        
+        // Voice Assistance Variables
+        let isListening = false;
+        let voiceOutputEnabled = true;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const speechSynthesis = window.speechSynthesis;
+        
+        // Initialize Speech Recognition
+        let recognition = null;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+        }
+        
+        // Voice Input Function
+        function startVoiceInput() {
+            if (!recognition) {
+                alert('Voice recognition not supported in your browser. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+            
+            if (isListening) {
+                recognition.abort();
+                isListening = false;
+                document.getElementById('voice-status').style.display = 'none';
+                document.getElementById('ai-voice-input').style.color = '#3498db';
+                return;
+            }
+            
+            isListening = true;
+            document.getElementById('voice-status').style.display = 'inline';
+            document.getElementById('ai-voice-input').style.color = '#e74c3c';
+            aiInput.value = '';
+            
+            recognition.onstart = function() {
+                document.getElementById('voice-status').textContent = '🎤 Listening...';
+            };
+            
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    
+                    if (event.results[i].isFinal) {
+                        aiInput.value = transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                if (interimTranscript) {
+                    document.getElementById('voice-status').textContent = '🎤 ' + interimTranscript;
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                document.getElementById('voice-status').textContent = '❌ Error: ' + event.error;
+                console.log('Speech recognition error:', event.error);
+            };
+            
+            recognition.onend = function() {
+                isListening = false;
+                document.getElementById('voice-status').style.display = 'none';
+                document.getElementById('ai-voice-input').style.color = '#3498db';
+            };
+            
+            recognition.start();
+        }
+        
+        // Voice Output Function (Text-to-Speech)
+        function speakText(text) {
+            if (!voiceOutputEnabled || !speechSynthesis) return;
+            
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 0.8;
+            utterance.lang = 'en-US';
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        // Toggle Voice Output
+        function toggleVoiceOutput() {
+            voiceOutputEnabled = !voiceOutputEnabled;
+            const btn = document.getElementById('ai-voice-output');
+            if (voiceOutputEnabled) {
+                btn.textContent = '🔊 Voice ON';
+                btn.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            } else {
+                btn.textContent = '🔇 Voice OFF';
+                btn.style.background = 'linear-gradient(135deg, #95a5a6, #7f8c8d)';
+                speechSynthesis.cancel();
+            }
+        }
+        
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login status after page loads
+            setTimeout(checkLoginStatus, 3500);
+            
+            // Toggle between login and register forms
+            toggleFormBtn.addEventListener('click', function() {
+                if (loginForm.classList.contains('hidden')) {
+                    // Switch to login form
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                    loginTitle.textContent = 'Login to MedStudy';
+                    toggleFormBtn.textContent = "Don't have an account? Sign up";
+                } else {
+                    // Switch to register form
+                    loginForm.classList.add('hidden');
+                    registerForm.classList.remove('hidden');
+                    loginTitle.textContent = 'Create an Account';
+                    toggleFormBtn.textContent = 'Already have an account? Login';
+                }
+            });
+            
+            // Password Toggle Functionality
+            function setupPasswordToggle(toggleBtnId, inputId) {
+                const toggleBtn = document.getElementById(toggleBtnId);
+                const input = document.getElementById(inputId);
+                
+                if (toggleBtn && input) {
+                    toggleBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const type = input.type === 'password' ? 'text' : 'password';
+                        input.type = type;
+                        
+                        // Change icon based on visibility
+                        toggleBtn.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+                        toggleBtn.title = type === 'password' ? 'Show password' : 'Hide password';
+                    });
+                }
+            }
+            
+            // Setup password toggles for all password fields
+            setupPasswordToggle('toggle-password-login', 'password');
+            setupPasswordToggle('toggle-password-new', 'new-password');
+            setupPasswordToggle('toggle-password-confirm', 'confirm-password');
+            
+            // Login form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (users[username] && users[username].password === password) {
+                    currentUser = username;
+                    localStorage.setItem('medstudy_current_user', username);
+                    showOnboardingPage();
+                    updateProgressDisplay();
+                } else {
+                    alert('Invalid username or password');
+                }
+            });
+            
+            // Auto-submit behavior: submit when user presses Enter in password
+            // or when password input loses focus and both fields are filled.
+            const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                            // Use requestSubmit if available to trigger the submit event
+                            if (typeof loginForm.requestSubmit === 'function') {
+                                loginForm.requestSubmit();
+                            } else {
+                                loginForm.submit();
+                            }
+                        }
+                    }
+                });
+
+                passwordInput.addEventListener('blur', function() {
+                    if (usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                        // small delay to allow any last-minute typing
+                        setTimeout(() => {
+                            if (usernameInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                                if (typeof loginForm.requestSubmit === 'function') {
+                                    loginForm.requestSubmit();
+                                } else {
+                                    loginForm.submit();
+                                }
+                            }
+                        }, 200);
+                    }
+                });
+            }
+            
+            // Register form submission
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('new-username').value;
+                const password = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                
+                if (users[username]) {
+                    alert('Username already exists');
+                    return;
+                }
+                
+                // Create new user
+                users[username] = {
+                    password: password,
+                    progress: {
+                        anatomy: 0,
+                        physiology: 0,
+                        pathology: 0,
+                        pharmacology: 0
+                    },
+                    completedResources: []
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('medstudy_users', JSON.stringify(users));
+                
+                // Auto login
+                currentUser = username;
+                localStorage.setItem('medstudy_current_user', username);
+                showOnboardingPage();
+                updateProgressDisplay();
+                
+                alert('Account created successfully!');
+            });
+            
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                currentUser = null;
+                localStorage.removeItem('medstudy_current_user');
+                loginPage.style.display = 'flex';
+                mainWebsite.classList.add('hidden');
+                
+                // Reset forms
+                loginForm.reset();
+                registerForm.reset();
+                if (registerForm.classList.contains('hidden') === false) {
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                    loginTitle.textContent = 'Login to MedStudy';
+                    toggleFormBtn.textContent = "Don't have an account? Sign up";
+                }
+            });
+            
+            // AI Assistant Events
+            aiAssistantBtn.addEventListener('click', toggleAIPanel);
+            closeAi.addEventListener('click', toggleAIPanel);
+            
+            aiSend.addEventListener('click', function() {
+                if (aiInput.value.trim() !== '') {
+                    processAIQuestion(aiInput.value);
+                }
+            });
+            
+            aiInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && aiInput.value.trim() !== '') {
+                    processAIQuestion(aiInput.value);
+                }
+            });
+            
+            // Voice input button
+            const voiceInputBtn = document.getElementById('ai-voice-input');
+            if (voiceInputBtn) {
+                voiceInputBtn.addEventListener('click', startVoiceInput);
+            }
+            
+            // Voice output toggle button
+            const voiceOutputBtn = document.getElementById('ai-voice-output');
+            if (voiceOutputBtn) {
+                voiceOutputBtn.addEventListener('click', toggleVoiceOutput);
+            }
+            
+            // Quick question buttons
+            quickQuestions.forEach(button => {
+                button.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    processAIQuestion(question);
+                });
+            });
+            
+            // Resource links - mark as completed and update progress
+            document.querySelectorAll('.resource-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const subject = this.getAttribute('data-subject');
+                    updateProgress(subject);
+                    alert(`Great! You've studied ${this.textContent}. Your progress has been updated.`);
+                });
+            });
+            
+            // Resource items - mark as completed
+            document.querySelectorAll('.resource-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const resourceId = this.getAttribute('data-resource');
+                    markResourceCompleted(resourceId);
+                    this.classList.add('completed');
+                    alert('Resource marked as completed!');
+                });
+            });
+            
+            // Tab functionality
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = btn.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Flashcard functionality
+            const flashcard = document.getElementById('flashcard');
+            const prevBtn = document.getElementById('prev-card');
+            const nextBtn = document.getElementById('next-card');
+            const shuffleBtn = document.getElementById('shuffle-cards');
+            
+            // Sample flashcard data
+            const flashcards = [
+                { question: "What is the most common cause of hypercalcemia in hospitalized patients?", answer: "Malignancy" },
+                { question: "Which artery supplies blood to the majority of the small intestine?", answer: "Superior mesenteric artery" },
+                { question: "What is the most common type of kidney stone?", answer: "Calcium oxalate" },
+                { question: "Which cranial nerve is responsible for facial sensation?", answer: "Trigeminal nerve (CN V)" },
+                { question: "What is the normal range for blood pH?", answer: "7.35 - 7.45" }
+            ];
+            
+            let currentCardIndex = 0;
+            
+            // Flip card on click
+            flashcard.addEventListener('click', function() {
+                this.classList.toggle('flipped');
+            });
+            
+            // Update flashcard content
+            function updateFlashcard() {
+                document.getElementById('flashcard-question').textContent = flashcards[currentCardIndex].question;
+                document.getElementById('flashcard-answer').textContent = flashcards[currentCardIndex].answer;
+                flashcard.classList.remove('flipped');
+            }
+            
+            // Next card
+            nextBtn.addEventListener('click', function() {
+                currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+                updateFlashcard();
+            });
+            
+            // Previous card
+            prevBtn.addEventListener('click', function() {
+                currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+                updateFlashcard();
+            });
+            
+            // Shuffle cards
+            shuffleBtn.addEventListener('click', function() {
+                // Simple shuffle algorithm
+                for (let i = flashcards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+                }
+                currentCardIndex = 0;
+                updateFlashcard();
+            });
+            
+            // Initialize first flashcard
+            updateFlashcard();
+
+            // Hamburger Menu Functionality
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+            // Toggle sidebar when hamburger is clicked
+            hamburgerBtn.addEventListener('click', function() {
+                hamburgerBtn.classList.toggle('active');
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            // Close sidebar when overlay is clicked
+            sidebarOverlay.addEventListener('click', function() {
+                hamburgerBtn.classList.remove('active');
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+
+            // Close sidebar when a link is clicked
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    hamburgerBtn.classList.remove('active');
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+            });
+
+            // Close sidebar when pressing Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    hamburgerBtn.classList.remove('active');
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+
+            // Collapsible Course Structure
+            const courseToggle = document.getElementById('course-toggle');
+            const courseStructure = document.getElementById('course-structure');
+
+            courseToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                courseToggle.classList.toggle('active');
+                
+                if (courseStructure.style.display === 'none') {
+                    courseStructure.style.display = 'block';
+                    courseToggle.textContent = '▼ MBBS Course Structure';
+                } else {
+                    courseStructure.style.display = 'none';
+                    courseToggle.textContent = '▶ MBBS Course Structure';
+                }
+            });
+
+            // Collapsible Quiz & Tests
+            const quizToggle = document.getElementById('quiz-toggle');
+            const quizStructure = document.getElementById('quiz-structure');
+
+            quizToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                quizToggle.classList.toggle('active');
+                
+                if (quizStructure.style.display === 'none') {
+                    quizStructure.style.display = 'block';
+                    quizToggle.textContent = '▼ Quiz & Tests';
+                } else {
+                    quizStructure.style.display = 'none';
+                    quizToggle.textContent = '▶ Quiz & Tests';
+                }
+            });
+
+            // Profile Dropdown Menu Functionality
+            const profileBtn = document.getElementById('profile-btn');
+            const profileDropdown = document.getElementById('profile-dropdown');
+
+            // Toggle dropdown when profile button is clicked
+            profileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+
+            // Onboarding Page Functionality
+            const onboardingForm = document.getElementById('onboarding-form');
+            const deptCards = document.querySelectorAll('.dept-card');
+            const userDeptInput = document.getElementById('user-department');
+            const onboardingBackBtn = document.getElementById('onboarding-back');
+            let selectedDept = null;
+
+            // Department card selection
+            deptCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    deptCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Update hidden input with selected department
+                    selectedDept = this.getAttribute('data-dept');
+                    userDeptInput.value = selectedDept;
+                });
+            });
+
+            // Back button - return to login
+            onboardingBackBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                onboardingPage.classList.add('hidden');
+                loginPage.style.display = 'flex';
+                
+                // Reset form
+                onboardingForm.reset();
+                deptCards.forEach(c => c.classList.remove('selected'));
+                userDeptInput.value = '';
+                
+                // Reset login form too
+                loginForm.reset();
+            });
+
+            // Onboarding form submission
+            onboardingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const uid = document.getElementById('user-uid').value.trim();
+                const dept = userDeptInput.value;
+                
+                // Validation
+                if (!uid) {
+                    alert('Please enter your UID');
+                    return;
+                }
+                
+                if (!dept) {
+                    alert('Please select a department');
+                    return;
+                }
+                
+                // Save user profile data
+                if (currentUser && users[currentUser]) {
+                    users[currentUser].uid = uid;
+                    users[currentUser].department = dept;
+                    localStorage.setItem('medstudy_users', JSON.stringify(users));
+                    localStorage.setItem('medstudy_user_uid', uid);
+                    localStorage.setItem('medstudy_user_department', dept);
+                }
+                
+                // Show main website
+                showMainWebsite();
+                
+                // Optional: Show welcome message
+                alert(`Welcome to MedStudy, ${currentUser}! Your ${dept} specialization profile is ready.`);
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+
+            
+            // Global Next/Previous navigation
+            const navOrder = [ 'login-page', 'onboarding-page', 'progress', 'subjects', 'resources', 'tools', 'flashcards' ];
+            const prevPageBtn = document.getElementById('prev-page-btn');
+            const nextPageBtn = document.getElementById('next-page-btn');
+
+            function getVisibleIndex() {
+                for (let i = 0; i < navOrder.length; i++) {
+                    const id = navOrder[i];
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    // If page overlays (login/onboarding) are visible by style
+                    const style = window.getComputedStyle(el);
+                    if (style.display !== 'none' && style.visibility !== 'hidden') {
+                        return i;
+                    }
+                }
+                // Default to progress section
+                const prog = document.getElementById('progress');
+                return prog ? navOrder.indexOf('progress') : 0;
+            }
+
+            function goToIndex(idx) {
+                if (idx < 0 || idx >= navOrder.length) return;
+                const id = navOrder[idx];
+                // Special handling for overlays
+                if (id === 'login-page') {
+                    loginPage.style.display = 'flex';
+                    onboardingPage.classList.add('hidden');
+                    mainWebsite.classList.add('hidden');
+                    window.scrollTo(0,0);
+                    return;
+                }
+                if (id === 'onboarding-page') {
+                    loginPage.style.display = 'none';
+                    onboardingPage.classList.remove('hidden');
+                    mainWebsite.classList.add('hidden');
+                    window.scrollTo(0,0);
+                    return;
+                }
+                // Otherwise show main website and scroll to section
+                loginPage.style.display = 'none';
+                onboardingPage.classList.add('hidden');
+                mainWebsite.classList.remove('hidden');
+                const el = document.getElementById(id);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            prevPageBtn.addEventListener('click', function() {
+                const idx = getVisibleIndex();
+                goToIndex(Math.max(0, idx - 1));
+            });
+
+            nextPageBtn.addEventListener('click', function() {
+                const idx = getVisibleIndex();
+                goToIndex(Math.min(navOrder.length - 1, idx + 1));
+            });
+
+            // API Settings Modal Functions
+            const apiModal = document.getElementById('api-settings-modal');
+            const apiForm = document.getElementById('api-key-form');
+            const apiKeyInput = document.getElementById('openai-api-key');
+            const apiModelSelect = document.getElementById('api-model');
+            const apiStatusMessage = document.getElementById('api-status-message');
+            const apiCloseBtn = document.querySelector('.api-close-btn');
+
+            // Open API Settings Modal
+            window.openApiModal = function() {
+                const saved = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+                
+                // Restore saved settings
+                if (saved.apiKey) {
+                    // Show masked API key for privacy
+                    const masked = '••••' + saved.apiKey.slice(-4);
+                    apiKeyInput.value = masked;
+                    apiKeyInput.dataset.isEditing = false;
+                } else {
+                    apiKeyInput.value = '';
+                    apiKeyInput.dataset.isEditing = true;
+                }
+                
+                if (saved.apiModel) {
+                    apiModelSelect.value = saved.apiModel;
+                }
+                
+                // Clear status message
+                apiStatusMessage.textContent = '';
+                apiStatusMessage.className = 'api-status';
+                
+                // Show modal
+                apiModal.classList.add('active');
+                
+                // Create overlay if not exists
+                if (!document.getElementById('api-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.id = 'api-overlay';
+                    overlay.className = 'api-modal-overlay';
+                    overlay.addEventListener('click', closeApiModal);
+                    apiModal.parentNode.insertBefore(overlay, apiModal.nextSibling);
+                }
+                document.getElementById('api-overlay').style.display = 'block';
+                
+                // Focus on input
+                setTimeout(() => apiKeyInput.focus(), 100);
+            };
+
+            // Close API Settings Modal
+            window.closeApiModal = function() {
+                apiModal.classList.remove('active');
+                const overlay = document.getElementById('api-overlay');
+                if (overlay) overlay.style.display = 'none';
+                apiForm.reset();
+            };
+
+            // Close button event listener
+            if (apiCloseBtn) {
+                apiCloseBtn.addEventListener('click', closeApiModal);
+            }
+
+            // API Key input - detect when user wants to edit
+            if (apiKeyInput) {
+                apiKeyInput.addEventListener('focus', function() {
+                    if (this.dataset.isEditing === 'false' && this.value.startsWith('••••')) {
+                        this.value = '';
+                        this.placeholder = 'Enter new API key or leave blank to keep current';
+                    }
+                });
+
+                apiKeyInput.addEventListener('blur', function() {
+                    if (this.value === '') {
+                        const saved = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+                        if (saved.apiKey) {
+                            const masked = '••••' + saved.apiKey.slice(-4);
+                            this.value = masked;
+                            this.dataset.isEditing = false;
+                        }
+                    }
+                });
+            }
+
+            // API Form submission
+            if (apiForm) {
+                apiForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    let apiKey = apiKeyInput.value.trim();
+                    const apiModel = apiModelSelect.value;
+                    
+                    // If masked key, use existing one
+                    if (apiKey.startsWith('••••')) {
+                        const saved = JSON.parse(localStorage.getItem('medstudyApiSettings') || '{}');
+                        apiKey = saved.apiKey || '';
+                    }
+                    
+                    // Validation
+                    if (!apiKey) {
+                        showApiStatus('error', '❌ Please enter an API key');
+                        return;
+                    }
+                    
+                    if (!apiKey.startsWith('sk-')) {
+                        showApiStatus('error', '❌ Invalid API key format. Must start with "sk-"');
+                        return;
+                    }
+                    
+                    // Save to localStorage
+                    try {
+                        const settings = {
+                            apiKey: apiKey,
+                            apiModel: apiModel,
+                            savedAt: new Date().toISOString()
+                        };
+                        localStorage.setItem('medstudyApiSettings', JSON.stringify(settings));
+                        
+                        // Show success message
+                        showApiStatus('success', '✅ API Key saved successfully! Your custom AI will use this key.');
+                        
+                        // Close modal after delay
+                        setTimeout(() => {
+                            closeApiModal();
+                        }, 1500);
+                    } catch (error) {
+                        showApiStatus('error', '❌ Failed to save API key: ' + error.message);
+                    }
+                });
+            }
+
+            // Show API Status Message
+            function showApiStatus(type, message) {
+                apiStatusMessage.textContent = message;
+                apiStatusMessage.className = `api-status ${type}`;
+                apiStatusMessage.style.display = 'block';
+            }
+
+            // Add API Settings button to profile dropdown
+            if (profileDropdown) {
+                // Check if settings button already exists
+                if (!document.getElementById('api-settings-btn')) {
+                    const settingsItem = document.createElement('li');
+                    settingsItem.innerHTML = '<button id="api-settings-btn" onclick="openApiModal()" style="width: 100%; text-align: left; padding: 0.8rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; color: #333;">⚙️ API Key Settings</button>';
+                    profileDropdown.appendChild(settingsItem);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
